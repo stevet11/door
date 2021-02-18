@@ -200,14 +200,16 @@ Door::Door(std::string dname, int argc, char *argv[])
 Door::~Door() {
   // restore default mode
   // tcsetattr(STDIN_FILENO, TCSANOW, &tio_default);
+  log("dtor");
   tcsetattr(STDIN_FILENO, TCOFLUSH, &tio_default);
-  logf.close();
   signal(SIGHUP, SIG_DFL);
   signal(SIGPIPE, SIG_DFL);
 
   // time thread
   stop_thread.set_value();
   time_thread.join();
+  log("done");
+  logf.close();
 }
 
 // https://www.tutorialspoint.com/how-do-i-terminate-a-thread-in-cplusplus11
@@ -218,6 +220,7 @@ void Door::time_thread_run(std::future<void> future) {
     // std::cout << "Executing the thread....." << std::endl;
     std::this_thread::sleep_for(std::chrono::seconds(1));
     seconds_elapsed++;
+    // log("TICK");
     // logf << "TICK " << seconds_elapsed << std::endl;
     if (seconds_elapsed % 60 == 0) {
       time_left--;
@@ -401,6 +404,9 @@ bool Door::haskey(void) {
   struct timeval tv;
   int select_ret = -1;
 
+  if (hangup)
+    return -2;
+
   while (select_ret == -1) {
     FD_ZERO(&socket_set);
     FD_SET(STDIN_FILENO, &socket_set);
@@ -412,7 +418,8 @@ bool Door::haskey(void) {
     if (select_ret == -1) {
       if (errno == EINTR)
         continue;
-      log("haskey select_ret = -1");
+      log("hangup detected");
+      hangup = true;
       return (-2);
     }
     if (select_ret == 0)
@@ -452,7 +459,8 @@ signed int Door::getch(void) {
     if (select_ret == -1) {
       if (errno == EINTR)
         continue;
-      log("getch select_ret = -1");
+      log("hangup detected");
+      door::hangup = true;
       return (-2);
     }
     if (select_ret == 0)
@@ -462,7 +470,8 @@ signed int Door::getch(void) {
   recv_ret = read(STDIN_FILENO, &key, 1);
   if (recv_ret != 1) {
     // possibly log this.
-    log("rect_ret != 1");
+    log("hangup");
+    hangup = true;
     return -2;
   }
   return key;
@@ -658,6 +667,8 @@ signed int Door::sleep_key(int secs) {
   int recv_ret;
   char key;
   */
+  if (hangup)
+    return -2;
 
   while (select_ret == -1) {
     FD_ZERO(&socket_set);
@@ -671,6 +682,8 @@ signed int Door::sleep_key(int secs) {
     if (select_ret == -1) {
       if (errno == EINTR)
         continue;
+      hangup = true;
+      log("hangup detected");
       return (-2);
     }
     if (select_ret == 0)
@@ -696,8 +709,10 @@ std::streamsize Door::xsputn(const char *s, std::streamsize n) {
     static std::string buffer;
     buffer.append(s, n);
     // setp(&(*buffer.begin()), &(*buffer.end()));
-    std::cout << buffer;
-    std::cout.flush();
+    if (!hangup) {
+      std::cout << buffer;
+      std::cout.flush();
+    }
     // od_disp_emu(buffer.c_str(), TRUE);
     // Tracking character position could be a problem / local terminal unicode.
     if (track)
@@ -727,8 +742,10 @@ int Door::overflow(char c) {
   if (debug_capture) {
     debug_buffer.append(1, c);
   } else {
-    std::cout << c;
-    std::cout.flush();
+    if (!hangup) {
+      std::cout << c;
+      std::cout.flush();
+    }
   }
   if (track)
     cx++;

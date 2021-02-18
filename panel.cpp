@@ -549,9 +549,9 @@ int Menu::choose(Door &door) {
     // Ok, when the option changes, can I control what gets updated??!?
     int event = door.sleep_key(door.inactivity);
 
-    if (event == -1) {
+    if (event < 0) {
       // timeout!
-      return -1;
+      return event;
     }
 
     // od_get_input(&event, OD_NO_TIMEOUT, GETIN_NORMAL);
