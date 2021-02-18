@@ -114,6 +114,32 @@ Line::Line(std::string &txt, int width) : text{txt} {
   hasColor = false;
 }
 
+Line::Line(std::string &txt, int width, ANSIColor c) : text{txt}, color{c} {
+  if (width)
+    makeWidth(width);
+  hasColor = true;
+}
+
+Line::Line(const char *txt, int width, ANSIColor c) : text{txt}, color{c} {
+  if (width)
+    makeWidth(width);
+  hasColor = true;
+}
+
+Line::Line(std::string &txt, int width, renderFunction rf)
+    : text{txt}, render{rf} {
+  if (width)
+    makeWidth(width);
+  hasColor = false;
+}
+
+Line::Line(const char *txt, int width, renderFunction rf)
+    : text{txt}, render{rf} {
+  if (width)
+    makeWidth(width);
+  hasColor = false;
+}
+
 /**
  * Construct a new Line:: Line object with
  * const char * and total width

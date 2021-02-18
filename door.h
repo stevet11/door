@@ -1,4 +1,5 @@
-// #include <OpenDoor.h> // Now using odoors for c++
+#ifndef DOOR_H
+#define DOOR_H
 
 #include "anyoption.h"
 #include <cstdint>
@@ -55,6 +56,7 @@
 namespace door {
 
 extern bool unicode;
+extern bool debug_capture;
 
 /*
 Translate CP437 strings to unicode for output.
@@ -221,6 +223,7 @@ public:
   virtual ~Door();
   void log(std::string output);
   AnyOption opt;
+  std::string debug_buffer;
 
   /**
    * Previous ANSI-BBS colors and attributes sent.
@@ -454,6 +457,10 @@ private:
 public:
   Line(std::string &txt, int width = 0);
   Line(const char *txt, int width = 0);
+  Line(std::string &txt, int width, ANSIColor c);
+  Line(const char *txt, int width, ANSIColor c);
+  Line(std::string &txt, int width, renderFunction rf);
+  Line(const char *txt, int width, renderFunction rf);
   Line(const Line &rhs);
   // ~Line();
 
@@ -680,3 +687,4 @@ lightline - text, changes format/coloring if focus/nofocus is set?
  */
 
 } // namespace door
+#endif

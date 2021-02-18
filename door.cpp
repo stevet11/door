@@ -32,11 +32,13 @@ static bool hangup = false;
 
 void sig_handler(int signal) {
   hangup = true;
+  /*
   ofstream sigf;
   sigf.open("signal.log", std::ofstream::out | std::ofstream::app);
 
   sigf << "SNAP! GOT: " << signal << std::endl;
   sigf.close();
+  */
   // 13 SIGPIPE -- ok, what do I do with this, eh?
 }
 
@@ -84,6 +86,7 @@ void cp437toUnicode(const char *input, std::string &out) {
 }
 
 bool unicode = false;
+bool debug_capture = false;
 
 /**
  * Construct a new Door object using the commandline parameters
@@ -182,16 +185,11 @@ Door::Door(std::string dname, int argc, char *argv[])
   }
 
   // Set program name
-  // strcpy(od_control.od_prog_name, dname.c_str());
-  // od_prog_copyright, od_prog_version
+
   std::string logFileName = dname + ".log";
   logf.open(logFileName.c_str(), std::ofstream::out | std::ofstream::app);
 
   log("Door init");
-  // strcpy(od_control.od_logfile_name, logFileName.c_str());
-  // Initialize Door
-  //  od_init();
-
   init();
 
   // door.sys doesn't give BBS name. system_name
@@ -200,11 +198,6 @@ Door::Door(std::string dname, int argc, char *argv[])
 }
 
 Door::~Door() {
-  // od_exit(0, FALSE);
-
-  // alarm(0);
-  // signal(SIGALRM, SIG_DFL);
-
   // restore default mode
   // tcsetattr(STDIN_FILENO, TCSANOW, &tio_default);
   tcsetattr(STDIN_FILENO, TCOFLUSH, &tio_default);
@@ -269,7 +262,7 @@ void Door::detect_unicode_and_screen(void) {
     *this << "\377\375\042\377\373\001"; // fix telnet client
   }
 
-  *this << "\x1b[0;30;40m;\x1b[2J\x1b[H"; // black on black, clrscr, go home
+  *this << "\x1b[0;30;40m\x1b[2J\x1b[H"; // black on black, clrscr, go home
   *this << "\u2615"
         << "\x1b[6n";                   // hot beverage + cursor pos
   *this << "\x1b[999C\x1b[999B\x1b[6n"; // goto end of screen + cursor pos
@@ -303,8 +296,16 @@ void Door::detect_unicode_and_screen(void) {
       logf << std::endl;
       logf << "BUFFER [" << (char *)buffer << "]" << std::endl;
       */
+      // logf << "BUFFER [" << (char *)buffer << "]" << std::endl;
+
       // this did not work -- because of the null characters in the buffer.
-      if (strstr(buffer, "1;2R") != nullptr) {
+
+      // 1;3R required on David's machine.  I'm not sure why.
+      // 1;3R also happens under VSCodium.
+      // 1;4R is what I get from syncterm.
+
+      if ((strstr(buffer, "1;2R") != nullptr) or
+          (strstr(buffer, "1;3R") != nullptr)) {
         unicode = true;
         log("unicode enabled \u2615"); // "U0001f926");
       }
@@ -434,7 +435,10 @@ signed int Door::getch(void) {
   char key;
 
   if (door::hangup)
-    return -1;
+    return -2;
+
+  if (time_left < 2)
+    return -3;
 
   while (select_ret == -1) {
     FD_ZERO(&socket_set);
@@ -686,16 +690,20 @@ signed int Door::sleep_key(int secs) {
  * @return std::streamsize
  */
 std::streamsize Door::xsputn(const char *s, std::streamsize n) {
-  static std::string buffer;
-  buffer.append(s, n);
-  // setp(&(*buffer.begin()), &(*buffer.end()));
-  std::cout << buffer;
-  std::cout.flush();
-  // od_disp_emu(buffer.c_str(), TRUE);
-  // Tracking character position could be a problem / local terminal unicode.
-  if (track)
-    cx += n;
-  buffer.clear();
+  if (debug_capture) {
+    debug_buffer.append(s, n);
+  } else {
+    static std::string buffer;
+    buffer.append(s, n);
+    // setp(&(*buffer.begin()), &(*buffer.end()));
+    std::cout << buffer;
+    std::cout.flush();
+    // od_disp_emu(buffer.c_str(), TRUE);
+    // Tracking character position could be a problem / local terminal unicode.
+    if (track)
+      cx += n;
+    buffer.clear();
+  }
   return n;
 }
 
@@ -716,8 +724,12 @@ int Door::overflow(char c) {
 
   // buffer.push_back(c);
   // od_disp_emu(temp, TRUE);
-  std::cout << c;
-  std::cout.flush();
+  if (debug_capture) {
+    debug_buffer.append(1, c);
+  } else {
+    std::cout << c;
+    std::cout.flush();
+  }
   if (track)
     cx++;
   // setp(&(*buffer.begin()), &(*buffer.end()));
