@@ -155,7 +155,12 @@ std::string ANSIColor::output(void) const {
   std::string clr(CSI);
 
   // check for special cases
-  if (reset and fg == COLOR::BLACK and bg == COLOR::BLACK) {
+  if (reset and (fg == COLOR::BLACK) and (bg == COLOR::BLACK)) {
+    clr += "0m";
+    return clr;
+  }
+
+  if (reset and (fg == COLOR::WHITE) and (bg == COLOR::BLACK)) {
     clr += "0m";
     return clr;
   }
@@ -163,14 +168,18 @@ std::string ANSIColor::output(void) const {
   if (reset) {
     clr += "0;";
   }
-  if (blink) {
-    clr += "5;";
-  }
+
   if (bold) {
+    if (blink) {
+      clr += "5;";
+    }
     clr += "1;";
   } else {
     if (!reset)
       clr += "0;";
+    if (blink) {
+      clr += "5;";
+    }
   }
 
   clr += std::to_string(30 + (int)fg) + ";";
@@ -191,9 +200,10 @@ std::string ANSIColor::output(ANSIColor &previous) const {
   // color output optimization
 
   // check for special cases
-  if (reset and fg == COLOR::BLACK and bg == COLOR::BLACK) {
+  if (reset and (fg == COLOR::BLACK) and (bg == COLOR::BLACK)) {
     clr += "0m";
     previous = *this;
+    previous.reset = 0;
     return clr;
   }
 
@@ -205,10 +215,23 @@ std::string ANSIColor::output(ANSIColor &previous) const {
   if ((reset) or (temp_reset)) {
     // current has RESET, so default to always sending colors.
     if (temp_reset) {
-      clr += "0m" CSI;
-    };
+      clr += "0m";
+    }
+
+    // this fixes the extra \x1b that shows up with reset.
+    if (clr.compare(CSI) == 0)
+      clr.clear();
     clr += output();
+
+    /*
+        std::ofstream logf;
+        logf.open("ansicolor.log", std::ofstream::out | std::ofstream::app);
+        logf << "clr = [" << clr << "]" << std::endl;
+        logf.close();
+    */
+
     previous = *this;
+    previous.reset = 0;
     return clr;
   }
 
@@ -225,7 +248,6 @@ std::string ANSIColor::output(ANSIColor &previous) const {
       if (blink) {
         clr += "5;";
       }
-
       clr += "1;";
       if (fg != previous.fg)
         clr += std::to_string((int)fg + 30) + ";";
