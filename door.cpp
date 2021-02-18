@@ -223,7 +223,8 @@ void Door::time_thread_run(std::future<void> future) {
     // log("TICK");
     // logf << "TICK " << seconds_elapsed << std::endl;
     if (seconds_elapsed % 60 == 0) {
-      time_left--;
+      if (time_left > 0)
+        time_left--;
     }
   }
 }
@@ -406,6 +407,9 @@ bool Door::haskey(void) {
 
   if (hangup)
     return -2;
+
+  if (time_left < 2)
+    return -3;
 
   while (select_ret == -1) {
     FD_ZERO(&socket_set);
@@ -670,6 +674,9 @@ signed int Door::sleep_key(int secs) {
   if (hangup)
     return -2;
 
+  if (time_left < 2)
+    return -3;
+
   while (select_ret == -1) {
     FD_ZERO(&socket_set);
     FD_SET(STDIN_FILENO, &socket_set);
@@ -690,6 +697,49 @@ signed int Door::sleep_key(int secs) {
       return (-1);
   }
   return getkey();
+}
+
+std::string Door::input_string(int max) {
+  std::string input;
+
+  // draw the input area.
+  *this << std::string(max, ' ');
+  *this << std::string(max, '\x08');
+
+  int c;
+
+  while (true) {
+    c = sleep_key(inactivity);
+    if (c < 0) {
+      input.clear();
+      return input;
+    }
+    if (c > 0x1000)
+      continue;
+
+    if (isprint(c)) {
+      if (int(input.length()) < max) {
+        *this << char(c);
+        input.append(1, c);
+      } else {
+        // bell
+        *this << '\x07';
+      }
+    } else {
+      switch (c) {
+      case 0x08:
+      case 0x7f:
+        if (input.length() > 0) {
+          *this << "\x08 \x08";
+          // this->flush();
+          input.erase(input.length() - 1);
+        };
+        break;
+      case 0x0d:
+        return input;
+      }
+    }
+  }
 }
 
 /**
