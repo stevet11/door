@@ -163,14 +163,19 @@ std::string ANSIColor::output(void) const {
   if (reset) {
     clr += "0;";
   }
+  if (blink) {
+    clr += "5;";
+  }
   if (bold) {
     clr += "1;";
   } else {
     if (!reset)
       clr += "0;";
   }
+
   clr += std::to_string(30 + (int)fg) + ";";
   clr += std::to_string(40 + (int)bg) + "m";
+
   return clr;
 }
 
@@ -192,9 +197,17 @@ std::string ANSIColor::output(ANSIColor &previous) const {
     return clr;
   }
 
-  if (reset) {
+  bool temp_reset = false;
+  if ((!blink) and (blink != previous.blink)) {
+    temp_reset = true;
+  }
+
+  if ((reset) or (temp_reset)) {
     // current has RESET, so default to always sending colors.
-    clr = output();
+    if (temp_reset) {
+      clr += "0m" CSI;
+    };
+    clr += output();
     previous = *this;
     return clr;
   }
@@ -205,9 +218,14 @@ std::string ANSIColor::output(ANSIColor &previous) const {
   }
 
   // resume "optimization"
+
   if (bold != previous.bold) {
     // not the same, so handle this.
     if (bold) {
+      if (blink) {
+        clr += "5;";
+      }
+
       clr += "1;";
       if (fg != previous.fg)
         clr += std::to_string((int)fg + 30) + ";";
@@ -215,6 +233,10 @@ std::string ANSIColor::output(ANSIColor &previous) const {
         clr += std::to_string((int)bg + 40) + ";";
     } else {
       clr += "0;";
+      if (blink) {
+        clr += "5;";
+      }
+
       // RESET to turn OFF BOLD, clears previous
       if (fg != COLOR::WHITE)
         clr += std::to_string((int)fg + 30) + ";";
@@ -222,6 +244,10 @@ std::string ANSIColor::output(ANSIColor &previous) const {
         clr += std::to_string((int)bg + 40) + ";";
     }
   } else {
+    // not bold.
+    if (blink) {
+      clr += "5;";
+    }
     if (fg != previous.fg)
       clr += std::to_string((int)fg + 30) + ";";
     if (bg != previous.bg)

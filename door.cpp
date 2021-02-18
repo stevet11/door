@@ -940,6 +940,69 @@ renderFunction rBlueYellow = [](const std::string &txt) -> Render {
   return r;
 };
 
+door::renderFunction renderStatusValue(door::ANSIColor status,
+                                       door::ANSIColor value) {
+  door::renderFunction rf = [status,
+                             value](const std::string &txt) -> door::Render {
+    door::Render r(txt);
+    door::ColorOutput co;
+
+    co.pos = 0;
+    co.len = 0;
+    co.c = status;
+
+    size_t pos = txt.find(':');
+    if (pos == std::string::npos) {
+      // failed to find - use entire string as status color.
+      co.len = txt.length();
+      r.outputs.push_back(co);
+    } else {
+      pos++; // Have : in status color
+      co.len = pos;
+      r.outputs.push_back(co);
+      co.reset();
+      co.pos = pos;
+      co.c = value;
+      co.len = txt.length() - pos;
+      r.outputs.push_back(co);
+    }
+
+    return r;
+  };
+  return rf;
+}
+
+door::renderFunction rStatusValue = [](const std::string &txt) -> door::Render {
+  door::Render r(txt);
+  door::ColorOutput co;
+
+  // default colors STATUS: value
+  door::ANSIColor status(door::COLOR::BLUE, door::ATTR::BOLD);
+  door::ANSIColor value(door::COLOR::YELLOW, door::ATTR::BOLD);
+
+  co.pos = 0;
+  co.len = 0;
+  co.c = status;
+
+  size_t pos = txt.find(':');
+  if (pos == std::string::npos) {
+    // failed to find - use entire string as status color.
+    co.len = txt.length();
+    r.outputs.push_back(co);
+  } else {
+    pos++; // Have : in status color
+    co.len = pos;
+    r.outputs.push_back(co);
+    co.reset();
+    co.pos = pos;
+    co.c = value;
+    co.len = txt.length() - pos;
+    r.outputs.push_back(co);
+  }
+
+  return r;
+};
+
 /*
 std::function<void(Door &d, std::string &txt)> BlueYellow2 =
     [](Door &d, std::string &txt) -> void {
