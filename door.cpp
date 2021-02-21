@@ -22,6 +22,26 @@
 #include <algorithm>
 #include <iostream>
 
+/*
+
+My strategy here has failed.
+
+If I set enigma to cp437, then it handles everything but the cp437
+symbols (diamonds/hearts/spades/clubs) correctly on the unicode side.
+[And my door thinks it's all cp437 always]
+
+If I set enigma to utf8, then it works right on the ssh terminal side.
+But cp437 turns to puke because it's trying to convert cp437 from
+utf8 to cp437.  The symbols get '?'.
+
+I can't detect unicode (when set to utf8), but I can detect cp437
+(by sending the diamonds/hearts characters).
+
+But I can't get through the enigma translation system.  If only iconv worked
+correctly with hearts/clubs symbols!  Then I wouldn't need this broken
+work-around code.
+ */
+
 namespace door {
 
 void to_lower(std::string &text) {
@@ -274,8 +294,12 @@ void Door::detect_unicode_and_screen(void) {
     *this << "\377\375\042\377\373\001"; // fix telnet client
   }
 
+  // maybe I need to be trying to detect cp437 instead of trying to detect
+  // unicde!
+
   *this << "\x1b[0;30;40m\x1b[2J\x1b[H"; // black on black, clrscr, go home
-  *this << "\u2615"
+  // *this << "\u2615"
+  *this << "\x03\x04"                   // hearts and diamonds
         << "\x1b[6n";                   // hot beverage + cursor pos
   *this << "\x1b[999C\x1b[999B\x1b[6n"; // goto end of screen + cursor pos
   *this << "\x1b[H";                    // go home
@@ -308,7 +332,7 @@ void Door::detect_unicode_and_screen(void) {
       logf << std::endl;
       logf << "BUFFER [" << (char *)buffer << "]" << std::endl;
       */
-      if (0) {
+      if (1) {
         std::string cleanbuffer = buffer;
         std::string esc = "\x1b";
         std::string esc_text = "^[";
@@ -324,8 +348,10 @@ void Door::detect_unicode_and_screen(void) {
       // 1;3R also happens under VSCodium.
       // 1;4R is what I get from syncterm.
 
-      if ((strstr(buffer, "1;2R") != nullptr) or
-          (strstr(buffer, "1;3R") != nullptr)) {
+      if ((strstr(buffer, "1;1R") != nullptr)) {
+
+        // if ((strstr(buffer, "1;2R") != nullptr) or
+        //    (strstr(buffer, "1;3R") != nullptr)) {
         unicode = true;
         log("unicode enabled \u2615"); // "U0001f926");
       }
