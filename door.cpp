@@ -22,11 +22,19 @@
 #include <algorithm>
 #include <iostream>
 
+namespace door {
+
 void to_lower(std::string &text) {
   transform(text.begin(), text.end(), text.begin(), ::tolower);
 }
 
-namespace door {
+bool replace(std::string &str, const std::string &from, const std::string &to) {
+  size_t start_pos = str.find(from);
+  if (start_pos == std::string::npos)
+    return false;
+  str.replace(start_pos, from.length(), to);
+  return true;
+}
 
 static bool hangup = false;
 
@@ -300,8 +308,16 @@ void Door::detect_unicode_and_screen(void) {
       logf << std::endl;
       logf << "BUFFER [" << (char *)buffer << "]" << std::endl;
       */
-      // logf << "BUFFER [" << (char *)buffer << "]" << std::endl;
+      if (0) {
+        std::string cleanbuffer = buffer;
+        std::string esc = "\x1b";
+        std::string esc_text = "^[";
 
+        while (replace(cleanbuffer, esc, esc_text)) {
+        };
+
+        logf << "BUFFER [" << cleanbuffer << "]" << std::endl;
+      }
       // this did not work -- because of the null characters in the buffer.
 
       // 1;3R required on David's machine.  I'm not sure why.
