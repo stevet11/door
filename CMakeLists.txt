@@ -30,9 +30,9 @@ set(CMAKE_CXX_STANDARD   14)
 # set(CMAKE_CXX_STANDARD   17)
 set(CMAKE_CXX_EXTENSIONS ON)
 
-set(CMAKE_C_STANDARD 99)
-set(CMAKE_C_STANDARD_REQUIRED ON)
-set(CMAKE_C_EXTENSIONS OFF)
+## set(CMAKE_C_STANDARD 99)
+## set(CMAKE_C_STANDARD_REQUIRED ON)
+## set(CMAKE_C_EXTENSIONS OFF)
 
 if(MSVC)
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /W4 /WX")
@@ -42,11 +42,32 @@ endif()
 
 add_library(door++ ${HEADERS} ${SOURCES})
 
+## if(NOT EXISTS ${CMAKE_SOURCE_DIR}/googletest)
+if(NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/googletest)
+  message("***")
+  message("*** ERROR/MISSING *** please run: git clone https://github.com/google/googletest.git")
+  message("***")
+endif()
+
+add_subdirectory(googletest)
+
+option(gtest_build_samples "Build gtest's sample programs." OFF)
+option(gtest_disable_pthreads "Disable uses of pthreads in gtest." OFF)
+
+### TESTS
+add_executable(test-door test-door.cpp)
+add_dependencies(test-door gtest)
+target_link_libraries(test-door gtest_main door++)
+
+enable_testing()
+add_test(NAME test-door 
+  COMMAND test-door)
+
 # target_link_libraries(door++ pthread)
 
 target_include_directories(door++ PUBLIC $<BUILD_INTERFACE:${HEADERS_DIR}>)
 
-if(ZF_LOG_LIBRARY_PREFIX)
-	target_compile_definitions(door++ PRIVATE "ZF_LOG_LIBRARY_PREFIX=${ZF_LOG_LIBRARY_PREFIX}")
-endif()
+## if(ZF_LOG_LIBRARY_PREFIX)
+##	target_compile_definitions(door++ PRIVATE "ZF_LOG_LIBRARY_PREFIX=${ZF_LOG_LIBRARY_PREFIX}")
+## endif()
 

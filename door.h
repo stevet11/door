@@ -198,6 +198,7 @@ private:
   char buffer[5];
   unsigned int bpos;
   bool has_dropfile;
+  bool debugging;
   std::string dropfilename;
   vector<std::string> dropfilelines;
   ofstream logf;
@@ -379,6 +380,7 @@ public:
    * Default Goto constructor copier
    */
   Goto(Goto &) = default;
+  void set(int xpos, int ypos);
   friend std::ostream &operator<<(std::ostream &os, const Goto &g);
 };
 

@@ -123,8 +123,9 @@ bool debug_capture = false;
  * @example door_example.cpp
  */
 Door::Door(std::string dname, int argc, char *argv[])
-    : std::ostream(this), doorname{dname}, has_dropfile{false},
-      seconds_elapsed{0}, previous(COLOR::WHITE), track{true}, cx{1}, cy{1},
+    : std::ostream(this), doorname{dname},
+      has_dropfile{false}, debugging{false}, seconds_elapsed{0},
+      previous(COLOR::WHITE), track{true}, cx{1}, cy{1},
       inactivity{120}, node{1} {
 
   // Setup commandline options
@@ -141,6 +142,7 @@ Door::Door(std::string dname, int argc, char *argv[])
   opt.addUsage("");
   opt.setFlag("help", 'h');
   opt.setFlag("local", 'l');
+  opt.setFlag("debuggering");
   opt.setOption("dropfile", 'd');
   // opt.setOption("bbsname", 'b');
   opt.setOption("username", 'u');
@@ -161,6 +163,10 @@ Door::Door(std::string dname, int argc, char *argv[])
 
   if (opt.getValue("username") != nullptr) {
     username = opt.getValue("username");
+  }
+
+  if (opt.getFlag("debuggering")) {
+    debugging = true;
   }
 
   if (opt.getValue("node") != nullptr) {
@@ -221,8 +227,10 @@ Door::Door(std::string dname, int argc, char *argv[])
   init();
 
   // door.sys doesn't give BBS name. system_name
-  detect_unicode_and_screen();
-  logf << "Screen " << width << " X " << height << std::endl;
+  if (!debugging) {
+    detect_unicode_and_screen();
+    logf << "Screen " << width << " X " << height << std::endl;
+  }
 }
 
 Door::~Door() {
@@ -963,6 +971,11 @@ Goto::Goto(int xpos, int ypos) {
   y = ypos;
 }
 
+void Goto::set(int xpos, int ypos) {
+  x = xpos;
+  y = ypos;
+}
+
 /**
  * Output the ANSI codes to position the cursor to the given y,x position.
  *
@@ -981,9 +994,11 @@ std::ostream &operator<<(std::ostream &os, const Goto &g) {
     *d << "\x1b[";
     if (g.y > 1)
       *d << std::to_string(g.y);
-    os << ";";
-    if (g.x > 1)
+
+    if (g.x > 1) {
+      os << ";";
       *d << std::to_string(g.x);
+    }
     *d << "H";
     d->cx = g.x;
     d->cy = g.y;
