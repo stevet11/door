@@ -188,6 +188,20 @@ std::string ANSIColor::output(void) const {
   return clr;
 }
 
+std::string ANSIColor::debug(void) {
+  std::string output;
+  output = "ANSIColor FG";
+  output += std::to_string((int)fg);
+  output += ", BG";
+  output += std::to_string((int)bg);
+  output += ", B";
+  output += std::to_string(bold);
+  output += ", R";
+  output += std::to_string(reset);
+
+  return output;
+}
+
 /**
  * Output only what ANSI attributes and colors have changed.
  * This uses the previous ANSIColor value to determine what

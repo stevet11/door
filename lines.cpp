@@ -165,6 +165,9 @@ Line::Line(const Line &rhs)
   if (rhs.render) {
     render = rhs.render;
   }
+  if (rhs.updater) {
+    updater = rhs.updater;
+  }
 }
 
 /**
@@ -266,6 +269,20 @@ void Line::setRender(renderFunction rf) { render = rf; }
  */
 void Line::setUpdater(updateFunction newUpdater) { updater = newUpdater; }
 
+std::string Line::debug(void) {
+  std::string desc;
+
+  desc = "Line(";
+  desc += text;
+  desc += "): ";
+  if (updater) {
+    desc += "[U]";
+  }
+  if (render) {
+    desc += "[R]";
+  }
+  return desc;
+}
 /**
  * Call updater, report if the text was actually changed.
  *
@@ -274,6 +291,11 @@ void Line::setUpdater(updateFunction newUpdater) { updater = newUpdater; }
 bool Line::update(void) {
   if (updater) {
     std::string newText = updater();
+    int width = text.length();
+    int need = width - newText.length();
+    if (need > 0) {
+      newText.append(std::string(need, ' '));
+    }
     if (newText != text) {
       text = newText;
       return true;

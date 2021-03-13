@@ -195,6 +195,36 @@ void Panel::update(void) {
 }
 */
 
+bool Panel::update(Door &d) {
+  int row = y;
+  int style = (int)border_style;
+  if (style > 0)
+    ++row;
+
+  bool updated = false;
+
+  for (auto &line : lines) {
+    if (line->update()) {
+      /*
+      std::string output = d.previous.debug();
+      d.log(output);
+
+      output = "update():";
+      output.append(line->debug());
+      d.log(output);
+      */
+      updated = true;
+      int col = x;
+      if (style > 0)
+        ++col;
+      d << door::Goto(col, row);
+      d << *line;
+    }
+    ++row;
+  }
+  return updated;
+}
+
 // operator<< Panel is called to output the Menu.
 // Menu has been massively changed to use Render instead of Colorizer.
 
@@ -382,11 +412,9 @@ void Menu::defaultSelection(int d) { chosen = d; }
 
 /*
 void Menu::setColorizer(bool selected,
-                        std::function<void(Door &d, std::string &)> colorizer) {
-  if (selected)
-    selectedColorizer = colorizer;
-  else
-    unselectedColorizer = colorizer;
+                        std::function<void(Door &d, std::string &)> colorizer)
+{ if (selected) selectedColorizer = colorizer; else unselectedColorizer =
+colorizer;
 }
 */
 
@@ -503,8 +531,9 @@ Menu::makeColorizer(ANSIColor c1, ANSIColor c2, ANSIColor c3, ANSIColor c4) {
  */
 
 /**
- * @todo Fix this, so it only updates the lines that have been changed when the
- * user selects something.  Also, add the "Up/Down Move" maybe to the bottom?
+ * @todo Fix this, so it only updates the lines that have been changed when
+ * the user selects something.  Also, add the "Up/Down Move" maybe to the
+ * bottom?
  *
  * Needs timeout.
  *

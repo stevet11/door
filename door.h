@@ -161,6 +161,8 @@ public:
    */
   std::string output(void) const;
 
+  std::string debug(void);
+
   /**
    * @param previous the previous attributes and colors
    * @return std::string
@@ -384,6 +386,9 @@ public:
   friend std::ostream &operator<<(std::ostream &os, const Goto &g);
 };
 
+extern const char SaveCursor[];
+extern const char RestoreCursor[];
+
 /* should we try to derive a base class, so you can have multilines of
  * multilines? */
 
@@ -491,6 +496,8 @@ public:
   void setUpdater(updateFunction uf);
   bool update(void);
 
+  std::string debug(void);
+
   /**
    * @todo This might be a problem, because const Line wouldn't
    * allow me to track "updates".  I.E.  I send the line, I'd
@@ -567,6 +574,19 @@ public:
   void display(void);
   void update(void);
   */
+
+  /**
+   * @brief Updates a panel.
+   *
+   * returns True if something was changed (and cursor has moved)
+   * False, nothing to do, cursor is ok.
+   *
+   * @param d
+   * @return true
+   * @return false
+   */
+  bool update(Door &d);
+
   friend std::ostream &operator<<(std::ostream &os, const Panel &p);
 };
 
@@ -624,6 +644,8 @@ public:
   // static std::function<void(Door &d, std::string &)>
   // makeColorizer(ANSIColor c1, ANSIColor c2, ANSIColor c3, ANSIColor c4);
 };
+
+renderFunction renderStatusValue(ANSIColor state, ANSIColor value);
 
 class Screen {
 private:

@@ -1009,6 +1009,9 @@ std::ostream &operator<<(std::ostream &os, const Goto &g) {
   return os;
 }
 
+const char SaveCursor[] = "\x1b[s";
+const char RestoreCursor[] = "\x1b[u";
+
 // EXAMPLES
 
 /// BlueYellow Render example function

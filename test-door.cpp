@@ -86,6 +86,25 @@ TEST_F(DoorTest, ColorOptimizeOut1) {
   d->debug_buffer.clear();
 }
 
+TEST_F(DoorTest, ColorReset1) {
+  door::ANSIColor YonB(door::COLOR::YELLOW, door::COLOR::BLUE,
+                       door::ATTR::BOLD);
+  char Y_ON_B[] = "\x1b[1;33;44m";
+  *d << YonB;
+  EXPECT_STREQ(d->debug_buffer.c_str(), Y_ON_B);
+  d->debug_buffer.clear();
+  *d << door::reset;
+
+  EXPECT_STREQ(d->debug_buffer.c_str(), "\x1b[0m");
+  d->debug_buffer.clear();
+
+  door::ANSIColor WonB(door::COLOR::WHITE, door::COLOR::BLUE, door::ATTR::BOLD);
+  char W_ON_B[] = "\x1b[1;44m";
+  *d << WonB;
+  EXPECT_STREQ(d->debug_buffer.c_str(), W_ON_B);
+  d->debug_buffer.clear();
+}
+
 TEST_F(DoorTest, GotoOutput) {
   door::Goto pos(1, 1);
   *d << pos;
