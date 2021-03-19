@@ -224,7 +224,8 @@ public:
   /// Default copy ctor deleted
   Door(Door &) = delete;
   virtual ~Door();
-  void log(std::string output);
+  ofstream &log(void);
+  // void log(std::string output);
   AnyOption opt;
   std::string debug_buffer;
 

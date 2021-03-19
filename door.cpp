@@ -223,7 +223,7 @@ Door::Door(std::string dname, int argc, char *argv[])
   std::string logFileName = dname + ".log";
   logf.open(logFileName.c_str(), std::ofstream::out | std::ofstream::app);
 
-  log("Door init");
+  log() << "Door init" << std::endl;
   init();
 
   // door.sys doesn't give BBS name. system_name
@@ -236,7 +236,7 @@ Door::Door(std::string dname, int argc, char *argv[])
 Door::~Door() {
   // restore default mode
   // tcsetattr(STDIN_FILENO, TCSANOW, &tio_default);
-  log("dtor");
+  log() << "dtor" << std::endl;
   tcsetattr(STDIN_FILENO, TCOFLUSH, &tio_default);
   signal(SIGHUP, SIG_DFL);
   signal(SIGPIPE, SIG_DFL);
@@ -244,7 +244,7 @@ Door::~Door() {
   // time thread
   stop_thread.set_value();
   time_thread.join();
-  log("done");
+  log() << "done" << std::endl;
   logf.close();
 }
 
@@ -361,7 +361,7 @@ void Door::detect_unicode_and_screen(void) {
         // if ((strstr(buffer, "1;2R") != nullptr) or
         //    (strstr(buffer, "1;3R") != nullptr)) {
         unicode = true;
-        log("unicode enabled \u2615"); // "U0001f926");
+        log() << "unicode enabled \u2615" << std::endl; // "U0001f926");
       }
       // Get the terminal screen size
       // \x1b[1;2R\x1b[41;173R
@@ -372,8 +372,8 @@ void Door::detect_unicode_and_screen(void) {
       if (cp != nullptr) {
         cp = strchr(cp + 1, '\x1b');
       } else {
-        log("Failed terminal size detection.  See buffer:");
-        log(buffer);
+        log() << "Failed terminal size detection.  See buffer:" << std::endl;
+        log() << buffer << std::endl;
         return;
       }
 
@@ -435,19 +435,20 @@ void Door::parse_dropfile(const char *filepath) {
   } else {
     std::string msg = "Unknown dropfile: ";
     msg += filename;
-    log(msg);
+    log() << msg << std::endl;
     *this << msg << std::endl;
     exit(2);
   }
   has_dropfile = true;
 }
 
-void Door::log(std::string output) {
+ofstream &Door::log(void) {
   // todo:  have logging
 
   std::time_t t = std::time(nullptr);
   std::tm tm = *std::localtime(&t);
-  logf << std::put_time(&tm, "%c ") << output << std::endl;
+  logf << std::put_time(&tm, "%c ");
+  return logf; // << output << std::endl;
 }
 
 bool Door::haskey(void) {
@@ -472,7 +473,7 @@ bool Door::haskey(void) {
     if (select_ret == -1) {
       if (errno == EINTR)
         continue;
-      log("hangup detected");
+      log() << "hangup detected" << std::endl;
       hangup = true;
       return (-2);
     }
@@ -513,7 +514,7 @@ signed int Door::getch(void) {
     if (select_ret == -1) {
       if (errno == EINTR)
         continue;
-      log("hangup detected");
+      log() << "hangup detected" << std::endl;
       door::hangup = true;
       return (-2);
     }
@@ -524,7 +525,7 @@ signed int Door::getch(void) {
   recv_ret = read(STDIN_FILENO, &key, 1);
   if (recv_ret != 1) {
     // possibly log this.
-    log("hangup");
+    log() << "hangup" << std::endl;
     hangup = true;
     return -2;
   }
@@ -740,7 +741,7 @@ signed int Door::sleep_key(int secs) {
       if (errno == EINTR)
         continue;
       hangup = true;
-      log("hangup detected");
+      log() << "hangup detected" << std::endl;
       return (-2);
     }
     if (select_ret == 0)
