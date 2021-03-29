@@ -186,6 +186,9 @@ Door::Door(std::string dname, int argc, char *argv[])
   }
   */
 
+  std::string logFileName = dname + ".log";
+  logf.open(logFileName.c_str(), std::ofstream::out | std::ofstream::app);
+
   parse_dropfile(opt.getValue("dropfile"));
 
   /*
@@ -219,9 +222,6 @@ Door::Door(std::string dname, int argc, char *argv[])
   }
 
   // Set program name
-
-  std::string logFileName = dname + ".log";
-  logf.open(logFileName.c_str(), std::ofstream::out | std::ofstream::app);
 
   log() << "Door init" << std::endl;
   init();
@@ -452,6 +452,8 @@ void Door::parse_dropfile(const char *filepath) {
       exit(2);
     }
   }
+  log() << "node:" << node << " username: " << username << " handle: " << handle
+        << " time: " << time_left << std::endl;
   has_dropfile = true;
 }
 
