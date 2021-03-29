@@ -433,11 +433,24 @@ void Door::parse_dropfile(const char *filepath) {
     sysop = dropfilelines[34];
     handle = dropfilelines[35];
   } else {
-    std::string msg = "Unknown dropfile: ";
-    msg += filename;
-    log() << msg << std::endl;
-    *this << msg << std::endl;
-    exit(2);
+    if (filename == "door32.sys") {
+      // https://raw.githubusercontent.com/NuSkooler/ansi-bbs/master/docs/dropfile_formats/door32_sys.txt
+      // dropfilelines[0] = Comm type (0=local, 1=serial, 2=telnet)
+      // dropfilelines[1] = Comm or Socket handle
+      // dropfilelines[2] = BaudRate
+      // dropfilelines[3] = BBS Software Version
+      username = dropfilelines[4];
+      handle = dropfilelines[5];
+      time_left = atoi(dropfilelines[6].c_str());
+      // dropfilelines[7] = Emulation (0=Ascii, 1=ANSI, .. or above = ANSI)
+      node = atoi(dropfilelines[8].c_str());
+    } else {
+      std::string msg = "Unknown dropfile: ";
+      msg += filename;
+      log() << msg << std::endl;
+      *this << msg << std::endl;
+      exit(2);
+    }
   }
   has_dropfile = true;
 }
