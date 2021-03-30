@@ -410,6 +410,8 @@ void Menu::addSelection(char c, const char *line) {
 
 void Menu::defaultSelection(int d) { chosen = d; }
 
+char Menu::which(int d) { return options[d]; }
+
 /*
 void Menu::setColorizer(bool selected,
                         std::function<void(Door &d, std::string &)> colorizer)

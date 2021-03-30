@@ -638,6 +638,7 @@ public:
   */
 
   int choose(Door &door);
+  char which(int d);
 
   static renderFunction makeRender(ANSIColor c1, ANSIColor c2, ANSIColor c3,
                                    ANSIColor c4);
