@@ -156,6 +156,9 @@ public:
   ANSIColor &Attr(ATTR a);
   bool operator==(const ANSIColor &c) const;
   bool operator!=(const ANSIColor &c) const;
+  void setFg(COLOR f);
+  void setBg(COLOR b);
+  void attr(ATTR a);
 
   /**
    * @return std::string

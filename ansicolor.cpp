@@ -147,6 +147,17 @@ bool ANSIColor::operator!=(const ANSIColor &c) const {
            (blink == c.blink) and (inverse == c.inverse));
 }
 
+void ANSIColor::setFg(COLOR f) { fg = f; }
+void ANSIColor::setBg(COLOR b) { bg = b; }
+void ANSIColor::attr(ATTR a) {
+  // first, clear all attributes
+  reset = 0;
+  bold = 0;
+  blink = 0;
+  inverse = 0;
+  Attr(a);
+}
+
 /**
  * Output the full ANSI codes for attributes and color.
  * This does not look at the previous values.
