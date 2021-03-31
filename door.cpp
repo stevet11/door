@@ -114,6 +114,7 @@ void cp437toUnicode(const char *input, std::string &out) {
 }
 
 bool unicode = false;
+bool full_cp437 = false;
 bool debug_capture = false;
 
 /**
@@ -135,6 +136,7 @@ Door::Door(std::string dname, int argc, char *argv[])
   opt.addUsage(" -l  --local                Local Mode");
   opt.addUsage(" -d  --dropfile [FILENAME]  Load Dropfile");
   opt.addUsage(" -n  --node N               Set node number");
+  // opt.addUsage(" -c  --cp437                Force CP437");
   // opt.addUsage(" -b  --bbsname NAME         Set BBS Name");
   opt.addUsage(" -u  --username NAME        Set Username");
   opt.addUsage(" -t  --timeleft N           Set time left");
@@ -142,6 +144,8 @@ Door::Door(std::string dname, int argc, char *argv[])
   opt.addUsage("");
   opt.setFlag("help", 'h');
   opt.setFlag("local", 'l');
+  opt.setFlag("cp437", 'c');
+  opt.setFlag("unicode");
   opt.setFlag("debuggering");
   opt.setOption("dropfile", 'd');
   // opt.setOption("bbsname", 'b');
@@ -229,7 +233,15 @@ Door::Door(std::string dname, int argc, char *argv[])
   // door.sys doesn't give BBS name. system_name
   if (!debugging) {
     detect_unicode_and_screen();
-    logf << "Screen " << width << " X " << height << std::endl;
+    logf << "Screen " << width << " X " << height << " unicode " << unicode
+         << " full_cp437 " << full_cp437 << std::endl;
+  }
+
+  if (opt.getFlag("cp437")) {
+    unicode = false;
+  }
+  if (opt.getFlag("unicode")) {
+    unicode = true;
   }
 }
 
@@ -294,6 +306,7 @@ void Door::init(void) {
 
 void Door::detect_unicode_and_screen(void) {
   unicode = false;
+  full_cp437 = false;
   width = 0;
   height = 0;
 
@@ -307,7 +320,9 @@ void Door::detect_unicode_and_screen(void) {
 
   *this << "\x1b[0;30;40m\x1b[2J\x1b[H"; // black on black, clrscr, go home
   // *this << "\u2615"
-  *this << "\x03\x04"                   // hearts and diamonds
+  *this << "\x03\x04" // hearts and diamonds
+        << "\x1b[6n"; // cursor pos
+  *this << door::nl << "\u2615"
         << "\x1b[6n";                   // hot beverage + cursor pos
   *this << "\x1b[999C\x1b[999B\x1b[6n"; // goto end of screen + cursor pos
   *this << "\x1b[H";                    // go home
@@ -356,18 +371,25 @@ void Door::detect_unicode_and_screen(void) {
       // 1;3R also happens under VSCodium.
       // 1;4R is what I get from syncterm.
 
-      if ((strstr(buffer, "1;1R") != nullptr)) {
+      if ((strstr(buffer, "1;1R") != nullptr) and
+          ((strstr(buffer, "2;2R") != nullptr) or
+           (strstr(buffer, "2;3R") != nullptr))) {
 
         // if ((strstr(buffer, "1;2R") != nullptr) or
         //    (strstr(buffer, "1;3R") != nullptr)) {
         unicode = true;
         log() << "unicode enabled \u2615" << std::endl; // "U0001f926");
+      } else {
+        if (strstr(buffer, "1;3R") != nullptr) {
+          full_cp437 = true;
+        }
       }
       // Get the terminal screen size
       // \x1b[1;2R\x1b[41;173R
       // log(buffer);
 
       char *cp;
+      /*
       cp = strchr(buffer, '\x1b');
       if (cp != nullptr) {
         cp = strchr(cp + 1, '\x1b');
@@ -376,6 +398,8 @@ void Door::detect_unicode_and_screen(void) {
         log() << buffer << std::endl;
         return;
       }
+      */
+      cp = strrchr(buffer, '\x1b');
 
       if (cp != nullptr) {
         cp++;

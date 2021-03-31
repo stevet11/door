@@ -56,6 +56,7 @@
 namespace door {
 
 extern bool unicode;
+extern bool full_cp437;
 extern bool debug_capture;
 
 /*
