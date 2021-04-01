@@ -1,6 +1,6 @@
 #include "door.h"
+#include <set>
 #include <string.h>
-
 // #include <memory>
 
 namespace door {
@@ -223,6 +223,23 @@ bool Panel::update(Door &d) {
     ++row;
   }
   return updated;
+}
+
+void Panel::update(Door &d, int line) {
+  int row = y;
+  int style = (int)border_style;
+  if (style > 0)
+    ++row;
+
+  // ok, I have the line number to update.
+  auto &l = lines[line];
+  row += line;
+
+  int col = x;
+  if (style > 0)
+    ++col;
+  d << door::Goto(col, row);
+  d << *l;
 }
 
 // operator<< Panel is called to output the Menu.
@@ -551,11 +568,11 @@ int Menu::choose(Door &door) {
 
   bool updated = true;
   bool update_and_exit = false;
+  std::set<int> changed;
 
   while (true) {
     if (updated) {
-      for (unsigned int x = 0; x < lines.size(); x++) {
-
+      for (unsigned int x = 0; x < lines.size(); ++x) {
         if (x == chosen) {
           lines[x]->setRender(
               selectedRender); // setColorize(selectedColorizer);
@@ -565,7 +582,17 @@ int Menu::choose(Door &door) {
         }
       }
       // this outputs the entire menu
-      door << *this;
+      if (changed.empty())
+        door << *this;
+      else {
+        // update just the lines that have changed.
+        for (auto si : changed) {
+          // *this->update(door, si);
+          update(door, si);
+        }
+        // Currently, the cursor is beside the last line updated.  Where should
+        // the cursor go?  Should I place it back at the end of the panel?
+      }
       // door << flush;
       // door.update();
     };
@@ -584,6 +611,9 @@ int Menu::choose(Door &door) {
       // timeout!
       return event;
     }
+
+    unsigned int previous_choice = chosen;
+    changed.clear();
 
     // od_get_input(&event, OD_NO_TIMEOUT, GETIN_NORMAL);
 
@@ -618,6 +648,7 @@ int Menu::choose(Door &door) {
       // ENTER -- use current selection
       return chosen + 1;
     }
+
     for (unsigned int x = 0; x < lines.size(); x++) {
       if (toupper(options[x]) == toupper(event)) {
         // is the selected one current chosen?
@@ -631,6 +662,11 @@ int Menu::choose(Door &door) {
         chosen = x;
         update_and_exit = true;
       }
+    }
+
+    if (previous_choice != chosen) {
+      changed.insert(previous_choice);
+      changed.insert(chosen);
     }
   }
 

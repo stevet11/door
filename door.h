@@ -591,6 +591,7 @@ public:
    * @return false
    */
   bool update(Door &d);
+  void update(Door &d, int line);
 
   friend std::ostream &operator<<(std::ostream &os, const Panel &p);
 };
