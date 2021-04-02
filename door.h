@@ -158,6 +158,8 @@ public:
   bool operator!=(const ANSIColor &c) const;
   void setFg(COLOR f);
   void setBg(COLOR b);
+  COLOR getFg() { return fg; };
+  COLOR getBg() { return bg; };
   void attr(ATTR a);
 
   /**
