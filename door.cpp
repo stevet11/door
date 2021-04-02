@@ -410,6 +410,11 @@ void Door::detect_unicode_and_screen(void) {
           if (cp != nullptr) {
             cp++;
             width = atoi(cp);
+            // magiterm reports 25;923R !
+            if (width > 900) {
+              width = 0;
+              height = 0;
+            }
           } else {
             height = 0;
           }
@@ -599,12 +604,16 @@ signed int Door::getkey(void) {
 
   /*
   We get 0x0d 0x00 for [Enter] (Syncterm)
+  From David's syncterm, I'm getting 0x0d 0x0a.
   This strips out the null.
   */
   if (c == 0x0d) {
     c2 = getch();
-    if ((c2 != 0) and (c2 >= 0))
+    if ((c2 != 0) and (c2 >= 0) and (c2 != 0x0a)) {
+      log() << "got " << (int)c2 << " so stuffing it into unget buffer."
+            << std::endl;
       unget(c2);
+    }
     return c;
   }
 
