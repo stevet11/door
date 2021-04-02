@@ -242,6 +242,19 @@ void Panel::update(Door &d, int line) {
   d << *l;
 }
 
+door::Goto Panel::gotoEnd(void) {
+  int row = y;
+  int style = (int)border_style;
+  if (style > 0)
+    ++row;
+  row += lines.size();
+  int col = x;
+  if (style > 0)
+    col += 2;
+  col += width;
+  return door::Goto(col, row);
+}
+
 // operator<< Panel is called to output the Menu.
 // Menu has been massively changed to use Render instead of Colorizer.
 
@@ -590,8 +603,10 @@ int Menu::choose(Door &door) {
           // *this->update(door, si);
           update(door, si);
         }
-        // Currently, the cursor is beside the last line updated.  Where should
-        // the cursor go?  Should I place it back at the end of the panel?
+        // Cursor is positioned at the end of the panel/menu.
+        // The cursor changes colors as you arrow up or down.
+        // Interesting!
+        door << gotoEnd();
       }
       // door << flush;
       // door.update();

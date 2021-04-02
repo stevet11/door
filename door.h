@@ -386,7 +386,7 @@ public:
   /**
    * Default Goto constructor copier
    */
-  Goto(Goto &) = default;
+  Goto(const Goto &) = default;
   void set(int xpos, int ypos);
   friend std::ostream &operator<<(std::ostream &os, const Goto &g);
 };
@@ -592,6 +592,7 @@ public:
    */
   bool update(Door &d);
   void update(Door &d, int line);
+  door::Goto gotoEnd(void);
 
   friend std::ostream &operator<<(std::ostream &os, const Panel &p);
 };
