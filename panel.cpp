@@ -14,6 +14,14 @@ Panel::Panel(int xp, int yp, int panelWidth) : border_color() {
   // border_color = ANSIColor();
 }
 
+Panel::Panel(int panelWidth) : border_color() {
+  x = 0;
+  y = 0;
+  width = panelWidth;
+  hidden = false;
+  border_style = BorderStyle::NONE;
+}
+
 Panel::Panel(Panel &&ref) {
   x = ref.x;
   y = ref.y;
@@ -395,6 +403,13 @@ Menu::Menu(int x, int y, int width) : Panel(x, y, width) {
                                     Color(Colors::LWHITE, Colors::BLUE),
                                     Color(Colors::LWHITE, Colors::BLUE, 0),
                                     Color(Colors::LYELLOW, Colors::BLUE))); */
+  chosen = 0;
+}
+
+Menu::Menu(int width) : Panel(width) {
+  setStyle(BorderStyle::DOUBLE);
+  setRender(true, defaultSelectedRender);
+  setRender(false, defaultUnselectedRender);
   chosen = 0;
 }
 

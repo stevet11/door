@@ -565,6 +565,8 @@ protected:
 
 public:
   Panel(int x, int y, int width);
+  Panel(int width);
+
   // Panel(const Panel &);
   Panel(Panel &) = delete; // default;
   Panel(Panel &&ref);
@@ -633,6 +635,7 @@ public:
   */
 
   Menu(int x, int y, int width);
+  Menu(int width);
   // Menu(const Menu &);
   Menu(const Menu &) = delete;
   Menu(Menu &&);
