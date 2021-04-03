@@ -325,7 +325,7 @@ void Door::detect_unicode_and_screen(void) {
   *this << door::nl << "\u2615"
         << "\x1b[6n";                   // hot beverage + cursor pos
   *this << "\x1b[999C\x1b[999B\x1b[6n"; // goto end of screen + cursor pos
-  *this << "\x1b[H";                    // go home
+  *this << reset << "\x1b[2J\x1b[H";    // reset, cls, go home
 
   this->flush();
   usleep(1000 * 1000);
