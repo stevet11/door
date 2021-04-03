@@ -550,8 +550,11 @@ signed int Door::getch(void) {
     FD_ZERO(&socket_set);
     FD_SET(STDIN_FILENO, &socket_set);
 
+    // This delay isn't long enough for QModem in a DOSBOX.
+    // doorway mode arrow keys aren't always caught.
     tv.tv_sec = 0;
     tv.tv_usec = 100;
+    // tv.tv_usec = 500;
 
     select_ret = select(STDIN_FILENO + 1, &socket_set, NULL, NULL, &tv);
     // select(STDIN_FILENO + 1, &socket_set, NULL, NULL, bWait ? NULL : &tv);
@@ -573,6 +576,8 @@ signed int Door::getch(void) {
     hangup = true;
     return -2;
   }
+  // debug weird keys/layouts.
+  // log() << "read " << std::hex << (int)key << std::endl;
   return key;
 }
 
@@ -615,6 +620,79 @@ signed int Door::getkey(void) {
       unget(c2);
     }
     return c;
+  }
+
+  if (c == 0) {
+    // possibly "doorway mode"
+    int tries = 0;
+
+    c2 = getch();
+    while (c2 < 0) {
+      if (tries > 7) {
+        log() << "ok, got " << c2 << " and " << tries << " so returning 0x00!"
+              << std::endl;
+
+        return c;
+      }
+      c2 = getch();
+      ++tries;
+    }
+
+    if (tries > 0) {
+      log() << "tries " << tries << std::endl;
+    }
+
+    switch (c2) {
+    case 0x50:
+      return XKEY_DOWN_ARROW;
+    case 0x48:
+      return XKEY_UP_ARROW;
+    case 0x4b:
+      return XKEY_LEFT_ARROW;
+    case 0x4d:
+      return XKEY_RIGHT_ARROW;
+    case 0x47:
+      return XKEY_HOME;
+    case 0x4f:
+      return XKEY_END;
+    case 0x49:
+      return XKEY_PGUP;
+    case 0x51:
+      return XKEY_PGDN;
+    case 0x3b:
+      return XKEY_F1;
+    case 0x3c:
+      return XKEY_F2;
+    case 0x3d:
+      return XKEY_F3;
+    case 0x3e:
+      return XKEY_F4;
+    case 0x3f:
+      return XKEY_F5;
+    case 0x40:
+      return XKEY_F6;
+    case 0x41:
+      return XKEY_F7;
+    case 0x42:
+      return XKEY_F8;
+    case 0x43:
+      return XKEY_F9;
+    case 0x44:
+      return XKEY_F10;
+      /*
+    case 0x45:
+      return XKEY_F11;
+    case 0x46:
+      return XKEY_F12;
+      */
+    case 0x52:
+      return XKEY_INSERT;
+    case 0x53:
+      return XKEY_DELETE;
+    }
+    logf << "\r\nDEBUG:\r\n0x00 + 0x" << std::hex << (int)c2;
+    logf << "\r\n";
+    logf.flush();
   }
 
   if (c == 0x1b) {
