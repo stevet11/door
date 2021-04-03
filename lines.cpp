@@ -1,4 +1,5 @@
 #include "door.h"
+#include "utf8.h"
 
 namespace door {
 
@@ -191,9 +192,20 @@ bool Line::hasRender(void) {
  * @return int
  */
 int Line::length(void) {
-  if (!padding.empty())
-    return padding.length() * 2 + text.length();
-  return text.length();
+  if (!padding.empty()) {
+    if (unicode) {
+      return utf8::distance(padding.begin(), padding.end()) * 2 +
+             utf8::distance(text.begin(), text.end());
+    } else {
+      return padding.length() * 2 + text.length();
+    }
+  }
+
+  if (unicode) {
+    return utf8::distance(text.begin(), text.end());
+  } else {
+    return text.length();
+  }
 }
 
 /**
@@ -202,7 +214,12 @@ int Line::length(void) {
  * @param width int
  */
 void Line::makeWidth(int width) {
-  int need = width - text.length();
+  int need;
+  if (door::unicode)
+    need = width - utf8::distance(text.begin(), text.end());
+  else
+    need = width - text.length();
+
   if (need > 0) {
     text.append(std::string(need, ' '));
   }
@@ -291,8 +308,15 @@ std::string Line::debug(void) {
 bool Line::update(void) {
   if (updater) {
     std::string newText = updater();
-    int width = text.length();
-    int need = width - newText.length();
+    int width;
+    int need;
+    if (unicode) {
+      width = utf8::distance(text.begin(), text.end());
+      need = width - utf8::distance(newText.begin(), newText.end());
+    } else {
+      width = text.length();
+      need = width - newText.length();
+    }
     if (need > 0) {
       newText.append(std::string(need, ' '));
     }
