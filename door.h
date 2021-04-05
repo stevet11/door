@@ -576,6 +576,7 @@ public:
   void setTitle(std::unique_ptr<Line> T, int off = 1);
   void setStyle(BorderStyle bs);
   void setColor(ANSIColor c);
+  int getWidth(void) { return width; };
   void hide(void);
   void show(void);
   void addLine(std::unique_ptr<Line> l);
