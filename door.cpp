@@ -56,6 +56,14 @@ bool replace(std::string &str, const std::string &from, const std::string &to) {
   return true;
 }
 
+bool replace(std::string &str, const char *from, const char *to) {
+  size_t start_pos = str.find(from);
+  if (start_pos == std::string::npos)
+    return false;
+  str.replace(start_pos, strlen(from), to);
+  return true;
+}
+
 static bool hangup = false;
 
 void sig_handler(int signal) {
@@ -184,6 +192,8 @@ Door::Door(std::string dname, int argc, char *argv[])
     time_left = 25;
   }
 
+  time_used = 0;
+
   /*
   if (opt.getValue("bbsname") != nullptr) {
     bbsname = opt.getValue("bbsname");
@@ -267,12 +277,13 @@ void Door::time_thread_run(std::future<void> future) {
          std::future_status::timeout) {
     // std::cout << "Executing the thread....." << std::endl;
     std::this_thread::sleep_for(std::chrono::seconds(1));
-    seconds_elapsed++;
+    ++seconds_elapsed;
     // log("TICK");
     // logf << "TICK " << seconds_elapsed << std::endl;
     if (seconds_elapsed % 60 == 0) {
       if (time_left > 0)
-        time_left--;
+        --time_left;
+      ++time_used;
     }
   }
 }

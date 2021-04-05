@@ -254,6 +254,7 @@ public:
   // std::string bbsname;
   int node;
   atomic<int> time_left;
+  atomic<int> time_used;
 
   signed int getkey(void);
   bool haskey(void);
