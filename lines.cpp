@@ -109,13 +109,14 @@ std::ostream &operator<<(std::ostream &os, const MultiLine &ml) {
  * @param txt std::string
  * @param width int
  */
-Line::Line(std::string &txt, int width) : text{txt} {
+Line::Line(const std::string &txt, int width) : text{txt} {
   if (width)
     makeWidth(width);
   hasColor = false;
 }
 
-Line::Line(std::string &txt, int width, ANSIColor c) : text{txt}, color{c} {
+Line::Line(const std::string &txt, int width, ANSIColor c)
+    : text{txt}, color{c} {
   if (width)
     makeWidth(width);
   hasColor = true;
@@ -127,7 +128,7 @@ Line::Line(const char *txt, int width, ANSIColor c) : text{txt}, color{c} {
   hasColor = true;
 }
 
-Line::Line(std::string &txt, int width, renderFunction rf)
+Line::Line(const std::string &txt, int width, renderFunction rf)
     : text{txt}, render{rf} {
   if (width)
     makeWidth(width);

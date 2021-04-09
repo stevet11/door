@@ -250,6 +250,12 @@ void Panel::update(Door &d, int line) {
   d << *l;
 }
 
+void Panel::update(void) {
+  for (auto &line : lines) {
+    line->update();
+  }
+}
+
 door::Goto Panel::gotoEnd(void) {
   int row = y;
   int style = (int)border_style;
@@ -372,8 +378,8 @@ std::function<void(Door &d, std::string &)> Menu::defaultSelectedColorizer =
                         ANSIColor(COLOR::BLUE, COLOR::WHITE),
                         ANSIColor(COLOR::BLUE, COLOR::WHITE));
 
-std::function<void(Door &d, std::string &)> Menu::defaultUnselectedColorizer =
-    makeColorizer(ANSIColor(COLOR::WHITE, COLOR::BLUE, ATTR::BOLD),
+std::function<void(Door &d, std::string &)> Menu::defaultUnselectedColorizer
+= makeColorizer(ANSIColor(COLOR::WHITE, COLOR::BLUE, ATTR::BOLD),
                   ANSIColor(COLOR::WHITE, COLOR::BLUE, ATTR::BOLD),
                   ANSIColor(COLOR::WHITE, COLOR::BLUE, ATTR::BOLD),
                   ANSIColor(COLOR::YELLOW, COLOR::BLUE, ATTR::BOLD));
@@ -396,13 +402,15 @@ Menu::Menu(int x, int y, int width) : Panel(x, y, width) {
   /* makeColorizer(Color(Colors::BLUE, Colors::WHITE, 0),
                                    Color(Colors::BLUE, Colors::WHITE, 0),
                                    Color(Colors::BLUE, Colors::WHITE, 0),
-                                   Color(Colors::BLUE, Colors::WHITE, 0))); */
+                                   Color(Colors::BLUE, Colors::WHITE, 0)));
+   */
   setRender(false, defaultUnselectedRender);
   // setColorizer(false, defaultUnselectedColorizer);
   /* makeColorizer(Color(Colors::LWHITE, Colors::BLUE, 0),
                                     Color(Colors::LWHITE, Colors::BLUE),
                                     Color(Colors::LWHITE, Colors::BLUE, 0),
-                                    Color(Colors::LYELLOW, Colors::BLUE))); */
+                                    Color(Colors::LYELLOW, Colors::BLUE)));
+   */
   chosen = 0;
 }
 
@@ -459,9 +467,9 @@ char Menu::which(int d) { return options[d]; }
 
 /*
 void Menu::setColorizer(bool selected,
-                        std::function<void(Door &d, std::string &)> colorizer)
-{ if (selected) selectedColorizer = colorizer; else unselectedColorizer =
-colorizer;
+                        std::function<void(Door &d, std::string &)>
+colorizer) { if (selected) selectedColorizer = colorizer; else
+unselectedColorizer = colorizer;
 }
 */
 
@@ -546,15 +554,10 @@ renderFunction Menu::makeRender(ANSIColor c1, ANSIColor c2, ANSIColor c3,
 
 /*
 std::function<void(Door &d, std::string &)>
-Menu::makeColorizer(ANSIColor c1, ANSIColor c2, ANSIColor c3, ANSIColor c4) {
-  std::function<void(Door & d, std::string & txt)> colorize =
-      [c1, c2, c3, c4](Door &d, std::string txt) {
-        bool option = true;
-        for (char const &c : txt) {
-          if (option) {
-            if (c == '[' or c == ']') {
-              d << c1 << c;
-              if (c == ']')
+Menu::makeColorizer(ANSIColor c1, ANSIColor c2, ANSIColor c3, ANSIColor c4)
+{ std::function<void(Door & d, std::string & txt)> colorize = [c1, c2, c3,
+c4](Door &d, std::string txt) { bool option = true; for (char const &c :
+txt) { if (option) { if (c == '[' or c == ']') { d << c1 << c; if (c == ']')
                 option = false;
             } else {
               d << c2 << c;
@@ -584,8 +587,8 @@ Menu::makeColorizer(ANSIColor c1, ANSIColor c2, ANSIColor c3, ANSIColor c4) {
  *
  * Needs timeout.
  *
- * Should we return the index offset, or return the actual char?  (Like in the
- * case of Quit or Help?)
+ * Should we return the index offset, or return the actual char?  (Like in
+ * the case of Quit or Help?)
  *
  * @param door
  * @return int

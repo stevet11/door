@@ -471,11 +471,11 @@ private:
   updateFunction updater;
 
 public:
-  Line(std::string &txt, int width = 0);
+  Line(const std::string &txt, int width = 0);
   Line(const char *txt, int width = 0);
-  Line(std::string &txt, int width, ANSIColor c);
+  Line(const std::string &txt, int width, ANSIColor c);
   Line(const char *txt, int width, ANSIColor c);
-  Line(std::string &txt, int width, renderFunction rf);
+  Line(const std::string &txt, int width, renderFunction rf);
   Line(const char *txt, int width, renderFunction rf);
   Line(const Line &rhs);
   // ~Line();
@@ -598,6 +598,7 @@ public:
    */
   bool update(Door &d);
   void update(Door &d, int line);
+  void update(void);
   door::Goto gotoEnd(void);
 
   friend std::ostream &operator<<(std::ostream &os, const Panel &p);
