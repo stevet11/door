@@ -650,7 +650,7 @@ int Menu::choose(Door &door) {
 
     bool use_numberpad = true;
 
-    // Don't use the numberpad, if some of the options are 8 or 2 (up/down)
+    // Don't use the numberpad, if any of the options are 8 or 2 (up/down)
     for (const char &c : options) {
       if ((c == '8') or (c == '2'))
         use_numberpad = false;
