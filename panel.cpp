@@ -648,36 +648,48 @@ int Menu::choose(Door &door) {
     unsigned int previous_choice = chosen;
     changed.clear();
 
-    // od_get_input(&event, OD_NO_TIMEOUT, GETIN_NORMAL);
+    bool use_numberpad = true;
 
-    if (event > XKEY_START) {
-      switch (event) {
-      case XKEY_UP_ARROW:
-        if (chosen > 0) {
-          chosen--;
-          updated = true;
-        }
-        break;
-      case XKEY_DOWN_ARROW:
-        if (chosen < lines.size() - 1) {
-          chosen++;
-          updated = true;
-        }
-        break;
+    // Don't use the numberpad, if some of the options are 8 or 2 (up/down)
+    for (const char &c : options) {
+      if ((c == '8') or (c == '2'))
+        use_numberpad = false;
+    }
 
-      case XKEY_HOME:
-        if (chosen != 0) {
-          chosen = 0;
-          updated = true;
-        }
+    switch (event) {
+    case '8':
+      if (!use_numberpad)
         break;
-      case XKEY_END:
-        if (chosen != lines.size() - 1) {
-          chosen = lines.size() - 1;
-          updated = true;
-        }
+    case XKEY_UP_ARROW:
+      if (chosen > 0) {
+        chosen--;
+        updated = true;
       }
-    } else if (event == 0x0d) {
+      break;
+
+    case '2':
+      if (!use_numberpad)
+        break;
+    case XKEY_DOWN_ARROW:
+      if (chosen < lines.size() - 1) {
+        chosen++;
+        updated = true;
+      }
+      break;
+
+    case XKEY_HOME:
+      if (chosen != 0) {
+        chosen = 0;
+        updated = true;
+      }
+      break;
+    case XKEY_END:
+      if (chosen != lines.size() - 1) {
+        chosen = lines.size() - 1;
+        updated = true;
+      }
+    }
+    if (event == 0x0d) {
       // ENTER -- use current selection
       return chosen + 1;
     }
