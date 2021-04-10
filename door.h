@@ -192,8 +192,8 @@ public:
 class Door : public std::ostream, private std::streambuf {
 
 private:
-  virtual std::streamsize xsputn(const char *s, std::streamsize n);
-  virtual int overflow(char c);
+  std::streamsize xsputn(const char *s, std::streamsize n) override;
+  int overflow(int c) override;
   std::string doorname;
   void parse_dropfile(const char *filepath);
   void init(void);

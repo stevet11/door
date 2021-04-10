@@ -30,7 +30,7 @@ Panel::Panel(Panel &&ref) {
   border_style = ref.border_style;
   title = std::move(ref.title);
   offset = ref.offset;
-  lines = std::move(lines);
+  lines = std::move(ref.lines);
 }
 
 /*

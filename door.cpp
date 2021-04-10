@@ -968,7 +968,7 @@ std::streamsize Door::xsputn(const char *s, std::streamsize n) {
  * @param c char
  * @return int
  */
-int Door::overflow(char c) {
+int Door::overflow(int c) {
   /*
   char temp[2];
   temp[0] = c;
@@ -978,10 +978,10 @@ int Door::overflow(char c) {
   // buffer.push_back(c);
   // od_disp_emu(temp, TRUE);
   if (debug_capture) {
-    debug_buffer.append(1, c);
+    debug_buffer.append(1, (char)c);
   } else {
     if (!hangup) {
-      std::cout << c;
+      std::cout << (char)c;
       std::cout.flush();
     }
   }
