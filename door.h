@@ -261,6 +261,7 @@ public:
   int get_input(void);
   signed int sleep_key(int secs);
   std::string input_string(int max);
+  int get_one_of(const char *keys);
 };
 
 // Use this to define the deprecated colorizer  [POC]

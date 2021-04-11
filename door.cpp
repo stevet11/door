@@ -931,6 +931,32 @@ std::string Door::input_string(int max) {
 }
 
 /**
+ * @brief Get one of these keys
+ *
+ * returns offset, or < 0 if timeout.
+ *
+ * @param keys
+ * @return int
+ */
+int Door::get_one_of(const char *keys) {
+  int c;
+  while (true) {
+    c = sleep_key(inactivity);
+    if (c < 0)
+      return c;
+
+    if (c > 0x1000)
+      continue;
+    char *key = strchr(keys, (char)toupper(c));
+    if (key != nullptr) {
+      return key - keys;
+    }
+    *this << '\x07';
+  }
+  return c;
+}
+
+/**
  * Take given buffer and output it.
  *
  * This originally stored output in the buffer.  We now directly output
