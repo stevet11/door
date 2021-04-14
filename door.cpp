@@ -947,7 +947,7 @@ int Door::get_one_of(const char *keys) {
 
     if (c > 0x1000)
       continue;
-    char *key = strchr(keys, (char)toupper(c));
+    const char *key = strchr(keys, (char)toupper(c));
     if (key != nullptr) {
       return key - keys;
     }
@@ -959,8 +959,8 @@ int Door::get_one_of(const char *keys) {
 /**
  * Take given buffer and output it.
  *
- * This originally stored output in the buffer.  We now directly output
- * via the OpenDoor od_disp_emu.
+ * If debug_capture is enabled, we save everything to debug_buffer.
+ * This is used by the tests.
  *
  * @param s const char *
  * @param n std::streamsize
@@ -977,7 +977,6 @@ std::streamsize Door::xsputn(const char *s, std::streamsize n) {
       std::cout << buffer;
       std::cout.flush();
     }
-    // od_disp_emu(buffer.c_str(), TRUE);
     // Tracking character position could be a problem / local terminal unicode.
     if (track)
       cx += n;
@@ -995,14 +994,6 @@ std::streamsize Door::xsputn(const char *s, std::streamsize n) {
  * @return int
  */
 int Door::overflow(int c) {
-  /*
-  char temp[2];
-  temp[0] = c;
-  temp[1] = 0;
-  */
-
-  // buffer.push_back(c);
-  // od_disp_emu(temp, TRUE);
   if (debug_capture) {
     debug_buffer.append(1, (char)c);
   } else {

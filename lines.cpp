@@ -3,6 +3,8 @@
 
 namespace door {
 
+#ifdef EXPERIMENTAL
+
 BasicLine::BasicLine(std::string txt) : text{txt}, hasColor{false} {}
 
 BasicLine::BasicLine(std::string txt, ANSIColor c)
@@ -102,6 +104,8 @@ std::ostream &operator<<(std::ostream &os, const MultiLine &ml) {
   return os;
 }
 
+#endif
+
 /**
  * Construct a new Line:: Line object with
  * string and total width.
@@ -109,36 +113,28 @@ std::ostream &operator<<(std::ostream &os, const MultiLine &ml) {
  * @param txt std::string
  * @param width int
  */
-Line::Line(const std::string &txt, int width) : text{txt} {
-  if (width)
-    makeWidth(width);
+Line::Line(const std::string &txt, int w) : text{txt}, width{w} {
   hasColor = false;
 }
 
-Line::Line(const std::string &txt, int width, ANSIColor c)
-    : text{txt}, color{c} {
-  if (width)
-    makeWidth(width);
+Line::Line(const std::string &txt, int w, ANSIColor c)
+    : text{txt}, color{c}, width{w} {
+
   hasColor = true;
 }
 
-Line::Line(const char *txt, int width, ANSIColor c) : text{txt}, color{c} {
-  if (width)
-    makeWidth(width);
+Line::Line(const char *txt, int w, ANSIColor c)
+    : text{txt}, color{c}, width{w} {
   hasColor = true;
 }
 
-Line::Line(const std::string &txt, int width, renderFunction rf)
-    : text{txt}, render{rf} {
-  if (width)
-    makeWidth(width);
+Line::Line(const std::string &txt, int w, renderFunction rf)
+    : text{txt}, render{rf}, width{w} {
   hasColor = false;
 }
 
-Line::Line(const char *txt, int width, renderFunction rf)
-    : text{txt}, render{rf} {
-  if (width)
-    makeWidth(width);
+Line::Line(const char *txt, int w, renderFunction rf)
+    : text{txt}, render{rf}, width{w} {
   hasColor = false;
 }
 
@@ -149,11 +145,7 @@ Line::Line(const char *txt, int width, renderFunction rf)
  * @param txt const char *
  * @param width int
  */
-Line::Line(const char *txt, int width) : text{txt} {
-  if (width)
-    makeWidth(width);
-  hasColor = false;
-}
+Line::Line(const char *txt, int w) : text{txt}, width{w} { hasColor = false; }
 
 /**
  * Construct a new Line:: Line object from an
@@ -170,6 +162,7 @@ Line::Line(const Line &rhs)
   if (rhs.updater) {
     updater = rhs.updater;
   }
+  width = rhs.width;
 }
 
 /**
@@ -214,12 +207,14 @@ int Line::length(void) {
  *
  * @param width int
  */
-void Line::makeWidth(int width) {
+void Line::fit(void) {
   int need;
   if (door::unicode)
     need = width - utf8::distance(text.begin(), text.end());
   else
     need = width - text.length();
+
+  need -= padding.length() * 2;
 
   if (need > 0) {
     text.append(std::string(need, ' '));
@@ -309,15 +304,17 @@ std::string Line::debug(void) {
 bool Line::update(void) {
   if (updater) {
     std::string newText = updater();
-    int width;
+    // int line_len;
     int need;
     if (unicode) {
-      width = utf8::distance(text.begin(), text.end());
+      // line_len = utf8::distance(text.begin(), text.end());
       need = width - utf8::distance(newText.begin(), newText.end());
     } else {
-      width = text.length();
+      // line_len = text.length();
       need = width - newText.length();
     }
+
+    need -= padding.length() * 2;
     if (need > 0) {
       newText.append(std::string(need, ' '));
     }

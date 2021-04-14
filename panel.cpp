@@ -72,7 +72,10 @@ void Panel::setColor(ANSIColor c) { border_color = c; }
 
 void Panel::hide(void) { hidden = true; }
 void Panel::show(void) { hidden = false; }
-void Panel::addLine(std::unique_ptr<Line> l) { lines.push_back(std::move(l)); }
+void Panel::addLine(std::unique_ptr<Line> l) {
+  l->fit();
+  lines.push_back(std::move(l));
+}
 // or possibly std::move(l)); }
 
 /*
@@ -718,6 +721,8 @@ int Menu::choose(Door &door) {
   return 0;
 }
 
+#ifdef EXPERIMENTAL
+
 Screen::Screen() { hidden = false; }
 
 /*
@@ -741,5 +746,7 @@ std::ostream &operator<<(std::ostream &os, const Screen &s) {
   }
   return os;
 }
+
+#endif
 
 } // namespace door

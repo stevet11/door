@@ -398,6 +398,8 @@ public:
 extern const char SaveCursor[];
 extern const char RestoreCursor[];
 
+#ifdef EXPERIMENTAL
+
 /* should we try to derive a base class, so you can have multilines of
  * multilines? */
 
@@ -446,6 +448,8 @@ public:
   friend std::ostream &operator<<(std::ostream &os, const MultiLine &l);
 };
 
+#endif
+
 /**
  * @class Line
  * This holds text and ANSIColor information, and knows how to
@@ -471,6 +475,13 @@ private:
   /// updateFunction to use when updating.
   updateFunction updater;
 
+  int width;
+
+  /**
+   * @param width int
+   */
+  // void makeWidth(int width);
+
 public:
   Line(const std::string &txt, int width = 0);
   Line(const char *txt, int width = 0);
@@ -483,10 +494,7 @@ public:
 
   bool hasRender(void);
   int length(void); //  const;
-  /**
-   * @param width int
-   */
-  void makeWidth(int width);
+  void fit(void);
   /**
    * @param padstring std::string &
    * @param padColor ANSIColor
@@ -664,6 +672,8 @@ public:
 
 renderFunction renderStatusValue(ANSIColor state, ANSIColor value);
 
+#ifdef EXPERIMENTAL
+
 class Screen {
 private:
   bool hidden;
@@ -679,6 +689,8 @@ public:
 
   friend std::ostream &operator<<(std::ostream &os, const Screen &s);
 };
+
+#endif
 
 /*
 screen - contains panels.
