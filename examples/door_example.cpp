@@ -13,5 +13,5 @@ int main(int argc, char *argv[]) {
   // display text, reset colors, NewLine.
   door << "Hello World" << door::reset << door::nl;
 
-  od_get_key(TRUE); // Wait for a keypress before exiting
+  door.sleep_key(door.inactivity); // Wait for a keypress before exiting
 }
