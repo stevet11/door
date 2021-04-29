@@ -721,9 +721,7 @@ int Menu::choose(Door &door) {
   return 0;
 }
 
-#ifdef EXPERIMENTAL
-
-Screen::Screen() { hidden = false; }
+Screen::Screen(){}; // hidden = false; }
 
 /*
 Screen::Screen(Screen &s) {
@@ -734,19 +732,34 @@ Screen::Screen(Screen &s) {
 
 void Screen::addPanel(std::shared_ptr<Panel> p) { parts.push_back(p); }
 
+/*
 void Screen::hide(void) { hidden = true; }
 void Screen::show(void) { hidden = false; }
+*/
 
-std::ostream &operator<<(std::ostream &os, const Screen &s) {
-  if (!s.hidden) {
-    for (auto part : s.parts) {
-      os << part;
-    };
-    // os << flush;
+bool Screen::update(Door &d) {
+  bool updated = false;
+  for (auto panel : parts) {
+    if (panel->update(d))
+      updated = true;
   }
-  return os;
+  return updated;
 }
 
-#endif
+void Screen::update(void) {
+  for (auto panel : parts) {
+    panel->update();
+  }
+}
+
+std::ostream &operator<<(std::ostream &os, const Screen &s) {
+  // if (!s.hidden) {
+  for (auto part : s.parts) {
+    os << *part;
+  };
+  // os << flush;
+  // }
+  return os;
+}
 
 } // namespace door

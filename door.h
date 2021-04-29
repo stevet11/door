@@ -582,6 +582,11 @@ public:
   Panel(Panel &&ref);
 
   void set(int x, int y);
+  /*
+  void get(int &x, int &y) {
+    x = this->x;
+    y = this->y;
+  }; */
   void setTitle(std::unique_ptr<Line> T, int off = 1);
   void setStyle(BorderStyle bs);
   void setColor(ANSIColor c);
@@ -672,25 +677,26 @@ public:
 
 renderFunction renderStatusValue(ANSIColor state, ANSIColor value);
 
-#ifdef EXPERIMENTAL
-
 class Screen {
 private:
-  bool hidden;
+  // bool hidden;
   std::vector<std::shared_ptr<Panel>> parts;
 
 public:
   Screen(void);
   Screen(Screen &) = default;
   void addPanel(std::shared_ptr<Panel> p);
-  bool delPanel(std::shared_ptr<Panel> p); // HMM.  Or ptr?
-  void hide(void);
-  void show(void);
+  /*
+bool delPanel(std::shared_ptr<Panel> p);
+
+void hide(void);
+void show(void);
+*/
+  bool update(Door &d);
+  void update(void);
 
   friend std::ostream &operator<<(std::ostream &os, const Screen &s);
 };
-
-#endif
 
 /*
 screen - contains panels.
