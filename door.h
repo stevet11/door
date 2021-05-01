@@ -680,12 +680,12 @@ renderFunction renderStatusValue(ANSIColor state, ANSIColor value);
 class Screen {
 private:
   // bool hidden;
-  std::vector<std::shared_ptr<Panel>> parts;
+  std::vector<std::unique_ptr<Panel>> panels;
 
 public:
   Screen(void);
   Screen(Screen &) = default;
-  void addPanel(std::shared_ptr<Panel> p);
+  void addPanel(std::unique_ptr<Panel> p);
   /*
 bool delPanel(std::shared_ptr<Panel> p);
 

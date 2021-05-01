@@ -730,7 +730,9 @@ Screen::Screen(Screen &s) {
 }
 */
 
-void Screen::addPanel(std::shared_ptr<Panel> p) { parts.push_back(p); }
+void Screen::addPanel(std::unique_ptr<Panel> p) {
+  panels.push_back(std::move(p));
+}
 
 /*
 void Screen::hide(void) { hidden = true; }
@@ -739,7 +741,7 @@ void Screen::show(void) { hidden = false; }
 
 bool Screen::update(Door &d) {
   bool updated = false;
-  for (auto panel : parts) {
+  for (auto &panel : panels) {
     if (panel->update(d))
       updated = true;
   }
@@ -747,15 +749,15 @@ bool Screen::update(Door &d) {
 }
 
 void Screen::update(void) {
-  for (auto panel : parts) {
+  for (auto &panel : panels) {
     panel->update();
   }
 }
 
 std::ostream &operator<<(std::ostream &os, const Screen &s) {
   // if (!s.hidden) {
-  for (auto part : s.parts) {
-    os << *part;
+  for (auto &panel : s.panels) {
+    os << *panel;
   };
   // os << flush;
   // }
