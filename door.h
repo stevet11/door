@@ -310,6 +310,7 @@ public:
   const std::string text;
   /// Vector of ColorOutput object.
   std::vector<ColorOutput> outputs;
+  void append(ANSIColor color, int len = 1);
   void output(std::ostream &os);
 };
 

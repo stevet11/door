@@ -1053,6 +1053,37 @@ void Render::output(std::ostream &os) {
 }
 
 /**
+ * Create render output.
+ *
+ * Call this for each section you want to colorize.
+ *
+ * @param color
+ * @param len
+ */
+void Render::append(ANSIColor color, int len) {
+  if (outputs.empty()) {
+    ColorOutput co;
+    co.c = color;
+    co.pos = 0;
+    co.len = len;
+    outputs.push_back(co);
+    return;
+  }
+  ColorOutput &current = outputs.back();
+  if (current.c == color) {
+    current.len += len;
+    return;
+  }
+  // Ok, new entry
+  // beware the unicode text
+  ColorOutput co;
+  co.pos = current.pos + current.len;
+  co.c = color;
+  co.len = len;
+  outputs.push_back(co);
+}
+
+/**
  * Construct a new Clrscr:: Clrscr object
  *
  * This is used to clear the screen.
