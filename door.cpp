@@ -1204,146 +1204,16 @@ const char RestoreCursor[] = "\x1b[u";
 renderFunction rBlueYellow = [](const std::string &txt) -> Render {
   Render r(txt);
 
-  ColorOutput co;
-
-  bool uc = true;
   ANSIColor blue(COLOR::BLUE, ATTR::BOLD);
   ANSIColor cyan(COLOR::YELLOW, ATTR::BOLD);
 
-  co.pos = 0;
-  co.len = 0;
-  co.c = blue;
-  // d << blue;
-
-  int tpos = 0;
   for (char const &c : txt) {
-    if (uc) {
-      if (!isupper(c)) {
-        // possible color change
-        if (co.len != 0) {
-          r.outputs.push_back(co);
-          co.reset();
-          co.pos = tpos;
-        }
-
-        co.c = cyan;
-        // d << cyan;
-        uc = false;
-      }
-    } else {
-      if (isupper(c)) {
-        if (co.len != 0) {
-          r.outputs.push_back(co);
-          co.reset();
-          co.pos = tpos;
-        }
-        co.c = blue;
-
-        // d << blue;
-        uc = true;
-      }
-    }
-    co.len++;
-    tpos++;
-    // d << c;
-  }
-  if (co.len != 0) {
-    r.outputs.push_back(co);
+    if (isupper(c))
+      r.append(blue);
+    else
+      r.append(cyan);
   }
   return r;
 };
-
-door::renderFunction renderStatusValue(door::ANSIColor status,
-                                       door::ANSIColor value) {
-  door::renderFunction rf = [status,
-                             value](const std::string &txt) -> door::Render {
-    door::Render r(txt);
-    door::ColorOutput co;
-
-    co.pos = 0;
-    co.len = 0;
-    co.c = status;
-
-    size_t pos = txt.find(':');
-    if (pos == std::string::npos) {
-      // failed to find - use entire string as status color.
-      co.len = txt.length();
-      r.outputs.push_back(co);
-    } else {
-      pos++; // Have : in status color
-      co.len = pos;
-      r.outputs.push_back(co);
-      co.reset();
-      co.pos = pos;
-      co.c = value;
-      co.len = txt.length() - pos;
-      r.outputs.push_back(co);
-    }
-
-    return r;
-  };
-  return rf;
-}
-
-door::renderFunction rStatusValue = [](const std::string &txt) -> door::Render {
-  door::Render r(txt);
-  door::ColorOutput co;
-
-  // default colors STATUS: value
-  door::ANSIColor status(door::COLOR::BLUE, door::ATTR::BOLD);
-  door::ANSIColor value(door::COLOR::YELLOW, door::ATTR::BOLD);
-
-  co.pos = 0;
-  co.len = 0;
-  co.c = status;
-
-  size_t pos = txt.find(':');
-  if (pos == std::string::npos) {
-    // failed to find - use entire string as status color.
-    co.len = txt.length();
-    r.outputs.push_back(co);
-  } else {
-    pos++; // Have : in status color
-    co.len = pos;
-    r.outputs.push_back(co);
-    co.reset();
-    co.pos = pos;
-    co.c = value;
-    co.len = txt.length() - pos;
-    r.outputs.push_back(co);
-  }
-
-  return r;
-};
-
-/*
-std::function<void(Door &d, std::string &txt)> BlueYellow2 =
-    [](Door &d, std::string &txt) -> void {
-  bool uc = true;
-  ANSIColor blue(COLOR::BLACK, COLOR::CYAN);
-  ANSIColor cyan(COLOR::YELLOW, COLOR::BLUE, ATTR::BOLD);
-
-  d << blue;
-  for (char const &c : txt) {
-    if (uc) {
-      if (c == ':') {
-        d << cyan;
-        uc = false;
-      }
-    }
-    d << c;
-  }
-};
-
-std::function<void(Door &d, std::string &txt)> Aweful =
-    [](Door &d, std::string &txt) -> void {
-  for (char const &c : txt) {
-    // Color clr((Colors)((c % 14) + 1), Colors::BLACK, 0);
-    // Use only BRIGHT/LIGHT colors.
-    ANSIColor clr((COLOR)(c % 8), ATTR::BOLD);
-    d << clr << c;
-  }
-};
-*/
 
 } // namespace door

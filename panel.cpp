@@ -489,94 +489,26 @@ renderFunction Menu::makeRender(ANSIColor c1, ANSIColor c2, ANSIColor c3,
     Render r(txt);
 
     bool option = true;
-    ColorOutput co;
-
-    /*
-      bool uc = true;
-      ANSIColor blue(COLOR::BLUE, ATTR::BOLD);
-      ANSIColor cyan(COLOR::YELLOW, ATTR::BOLD);
-    */
-
-    co.pos = 0;
-    co.len = 0;
-    co.c = c1;
-    // d << blue;
-
-    int tpos = 0;
     for (char const &c : txt) {
       if (option) {
         if (c == '[' or c == ']') {
-          if (co.c != c1)
-            if (co.len != 0) {
-              r.outputs.push_back(co);
-              co.reset();
-              co.pos = tpos;
-            }
-          co.c = c1;
-          if (c == ']')
-            option = false;
+          r.append(c1);
+          option = (c == '[');
         } else {
-          if (co.c != c2)
-            if (co.len != 0) {
-              r.outputs.push_back(co);
-              co.reset();
-              co.pos = tpos;
-            }
-          co.c = c2;
+          r.append(c2);
         }
       } else {
-        if (isupper(c)) {
-          // possible color change
-          if (co.c != c3)
-            if (co.len != 0) {
-              r.outputs.push_back(co);
-              co.reset();
-              co.pos = tpos;
-            }
-          co.c = c3;
-        } else {
-          if (co.c != c4)
-            if (co.len != 0) {
-              r.outputs.push_back(co);
-              co.reset();
-              co.pos = tpos;
-            }
-          co.c = c4;
-        }
+        if (isupper(c))
+          r.append(c3);
+        else
+          r.append(c4);
       }
-      co.len++;
-      tpos++;
     }
-    if (co.len != 0) {
-      r.outputs.push_back(co);
-    }
+
     return r;
   };
   return render;
 }
-
-/*
-std::function<void(Door &d, std::string &)>
-Menu::makeColorizer(ANSIColor c1, ANSIColor c2, ANSIColor c3, ANSIColor c4)
-{ std::function<void(Door & d, std::string & txt)> colorize = [c1, c2, c3,
-c4](Door &d, std::string txt) { bool option = true; for (char const &c :
-txt) { if (option) { if (c == '[' or c == ']') { d << c1 << c; if (c == ']')
-                option = false;
-            } else {
-              d << c2 << c;
-            }
-          } else {
-            if (isupper(c)) {
-              d << c3 << c;
-            } else {
-              d << c4 << c;
-            }
-          }
-        }
-      };
-  return colorize;
-}
-*/
 
 /*
   Should this return the index number, or

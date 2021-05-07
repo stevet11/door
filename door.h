@@ -661,22 +661,13 @@ public:
   void addSelection(char c, const char *line);
   void defaultSelection(int d);
   void setRender(bool selected, renderFunction render);
-  /*
-  void setColorizer(bool selected,
-                    std::function<void(Door &d, std::string &)> colorizer);
-  */
 
   int choose(Door &door);
   char which(int d);
 
   static renderFunction makeRender(ANSIColor c1, ANSIColor c2, ANSIColor c3,
                                    ANSIColor c4);
-
-  // static std::function<void(Door &d, std::string &)>
-  // makeColorizer(ANSIColor c1, ANSIColor c2, ANSIColor c3, ANSIColor c4);
 };
-
-renderFunction renderStatusValue(ANSIColor state, ANSIColor value);
 
 class Screen {
 private:
