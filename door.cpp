@@ -933,10 +933,10 @@ std::string Door::input_string(int max) {
 /**
  * @brief Get one of these keys
  *
- * returns offset, or < 0 if timeout.
+ * returns char, or < 0 if timeout.
  *
  * @param keys
- * @return int
+ * @return char or < 0
  */
 int Door::get_one_of(const char *keys) {
   int c;
@@ -949,7 +949,7 @@ int Door::get_one_of(const char *keys) {
       continue;
     const char *key = strchr(keys, (char)toupper(c));
     if (key != nullptr) {
-      return key - keys;
+      return *key;
     }
     *this << '\x07';
   }
