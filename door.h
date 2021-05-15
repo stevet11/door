@@ -491,6 +491,7 @@ public:
   Line(const std::string &txt, int width, renderFunction rf);
   Line(const char *txt, int width, renderFunction rf);
   Line(const Line &rhs);
+  Line(Line &&rhs);
   // ~Line();
 
   bool hasRender(void);

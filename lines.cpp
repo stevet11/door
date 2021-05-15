@@ -165,6 +165,16 @@ Line::Line(const Line &rhs)
   width = rhs.width;
 }
 
+Line::Line(Line &&rhs)
+    : text{rhs.text}, hasColor{rhs.hasColor}, color{rhs.color},
+      padding{rhs.padding}, paddingColor{rhs.paddingColor} {
+  if (rhs.render)
+    render = rhs.render;
+  if (rhs.updater)
+    updater = rhs.updater;
+  width = rhs.width;
+}
+
 /**
  * Has a render function been set?
  *
