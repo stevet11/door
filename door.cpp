@@ -382,9 +382,8 @@ void Door::detect_unicode_and_screen(void) {
       // 1;3R also happens under VSCodium.
       // 1;4R is what I get from syncterm.
 
-      if (( (strstr(buffer, "1;1R") != nullptr) or 
-		      (strstr(buffer, "1;3R") != nullptr) )
-	      and
+      if (((strstr(buffer, "1;1R") != nullptr) or
+           (strstr(buffer, "1;3R") != nullptr)) and
           ((strstr(buffer, "2;2R") != nullptr) or
            (strstr(buffer, "2;3R") != nullptr))) {
 
