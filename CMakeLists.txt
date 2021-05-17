@@ -67,6 +67,9 @@ endif()
 
 target_include_directories(door++ PUBLIC $<BUILD_INTERFACE:${HEADERS_DIR}>)
 
+add_executable(door-example examples/door-example.cpp)
+target_link_libraries(door-example door++ pthread)
+
 ## if(ZF_LOG_LIBRARY_PREFIX)
 ##	target_compile_definitions(door++ PRIVATE "ZF_LOG_LIBRARY_PREFIX=${ZF_LOG_LIBRARY_PREFIX}")
 ## endif()

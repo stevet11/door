@@ -129,7 +129,7 @@ bool debug_capture = false;
  * Construct a new Door object using the commandline parameters
  * given to the main function.
  *
- * @example door_example.cpp
+ * @example door-example.cpp
  */
 Door::Door(std::string dname, int argc, char *argv[])
     : std::ostream(this), doorname{dname},
