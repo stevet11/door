@@ -483,6 +483,15 @@ void Menu::setRender(bool selected, renderFunction render) {
     unselectedRender = render;
 }
 
+/**
+ * make Render function for menus
+ *
+ * [O] Menu Item Text
+ *
+ * "[" and "]" are in c1, the "O" in c2
+ *
+ * "Menu Item Text" upper case letters are in c3, everything else c4.
+ */
 renderFunction Menu::makeRender(ANSIColor c1, ANSIColor c2, ANSIColor c3,
                                 ANSIColor c4) {
   renderFunction render = [c1, c2, c3, c4](const std::string &txt) -> Render {
