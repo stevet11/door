@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.2)
 
+project(door++
+  VERSION 0.1
+  LANGUAGES CXX)
+  
 # zf_log target (required)
 set(HEADERS_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set(HEADERS door.h)

@@ -24,6 +24,10 @@ int main( int argc, char * argv[] ) {
 
 * door::Line
 
+A line is text that can be updated, and can be colorized by the use of a rendering function.
+
+If you want all uppercase letters one color, and lowercase another.  That can be done.
+
 ```
 /*
  * Custom line rendering fuction.
@@ -109,13 +113,14 @@ mtitle.setPadding(" ", title_color);
 m.setTitle(std::make_unique<door::Line>(mtitle), 1);
 
 // Define colors for the menu
-
+// menu line selected
 m.setRender(true, door::Menu::makeRender(
                   door::ANSIColor(door::COLOR::CYAN, door::ATTR::BOLD),
                   door::ANSIColor(door::COLOR::BLUE, door::ATTR::BOLD),
                   door::ANSIColor(door::COLOR::CYAN, door::ATTR::BOLD),
                   door::ANSIColor(door::COLOR::BLUE, door::ATTR::BOLD)));
 
+// menu line unselected
 m.setRender(false, door::Menu::makeRender(
                    door::ANSIColor(door::COLOR::YELLOW, door::COLOR::BLUE,
                    door::ATTR::BOLD),
