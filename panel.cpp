@@ -272,6 +272,33 @@ door::Goto Panel::gotoEnd(void) {
   return door::Goto(col, row);
 }
 
+/**
+ * @brief Create a spacer line using block drawing characters.
+ *
+ * Return a Line of single or double characters the width of the panel.
+ * @param single
+ * @return std::unique_ptr<Line>
+ */
+std::unique_ptr<Line> Panel::spacer_line(bool single) {
+  std::string spacer_text;
+  if (door::unicode) {
+    for (int x = 0; x < width; ++x) {
+      if (single)
+        spacer_text.append(UBOXES[0].top);
+      else
+        spacer_text.append(UBOXES[1].top);
+    }
+  } else {
+    if (single)
+      spacer_text = std::string(width, BOXES[0].top[0]);
+    else
+      spacer_text = std::string(width, BOXES[1].top[0]);
+  }
+
+  std::unique_ptr<Line> line = make_unique<Line>(spacer_text, width);
+  return line;
+}
+
 // operator<< Panel is called to output the Menu.
 // Menu has been massively changed to use Render instead of Colorizer.
 

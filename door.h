@@ -157,6 +157,7 @@ public:
   bool operator==(const ANSIColor &c) const;
   bool operator!=(const ANSIColor &c) const;
   void setFg(COLOR f);
+  void setFg(COLOR f, ATTR a);
   void setBg(COLOR b);
   COLOR getFg() { return fg; };
   COLOR getBg() { return bg; };
@@ -616,7 +617,7 @@ public:
   void update(Door &d, int line);
   void update(void);
   door::Goto gotoEnd(void);
-
+  std::unique_ptr<Line> spacer_line(bool single);
   friend std::ostream &operator<<(std::ostream &os, const Panel &p);
 };
 
