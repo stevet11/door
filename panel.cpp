@@ -1,6 +1,7 @@
 #include "door.h"
 #include <set>
 #include <string.h>
+
 // #include <memory>
 
 namespace door {
@@ -196,6 +197,24 @@ struct box_styles BOXES[] = {
     },
 };
 
+const char *JOIN[2][2][2] = {{
+                                 {"\xc3", "\xb4"}, // SS 00
+                                 {"\xc6", "\xb5"}  // SD 01
+                             },
+                             {
+                                 {"\xc7", "\xb6"}, // DS 10
+                                 {"\xcc", "\xb9"}, // DD 11
+                             }};
+
+const char *UJOIN[2][2][2] = {{
+                                  {"\u251c", "\u2524"}, // SS ├ ┤
+                                  {"\u255e", "\u2561"}  // SD ╞ ╡
+                              },
+                              {
+                                  {"\u255f", "\u2562"}, // DS ╟ ╢
+                                  {"\u2560", "\u2563"}, // DD ╠ ╣
+                              }};
+
 /*
 void Panel::display(void) {
 
@@ -370,15 +389,72 @@ std::ostream &operator<<(std::ostream &os, const Panel &p) {
 
   for (auto &line : p.lines) {
     os << door::Goto(p.x, row);
+
+    bool join = false;
+    int line_is = -1;
+    int border_is = -1;
+
+    // is this a weird line?
+    {
+      const char *line_text = line->getText();
+      if (door::unicode) {
+        if (strncmp(UBOXES[0].top, line_text, strlen(UBOXES[0].top)) == 0) {
+          join = true;
+          line_is = 0;
+        }
+        if (strncmp(UBOXES[1].top, line_text, strlen(UBOXES[1].top)) == 0) {
+          join = true;
+          line_is = 1;
+        }
+      } else {
+        if (BOXES[0].top[0] == line_text[0]) {
+          join = true;
+          line_is = 0;
+        }
+        if (BOXES[1].top[0] == line_text[0]) {
+          join = true;
+          line_is = 1;
+        }
+      }
+    }
     if (style > 0) {
-      os << p.border_color << s.side;
+      if (join) {
+        switch (p.border_style) {
+        case door::BorderStyle::SINGLE:
+        case door::BorderStyle::DOUBLE_SINGLE:
+          border_is = 0;
+          break;
+
+        case door::BorderStyle::DOUBLE:
+        case door::BorderStyle::SINGLE_DOUBLE:
+          border_is = 1;
+          break;
+        default:
+          break;
+        }
+
+        os << p.border_color;
+        if (door::unicode)
+          os << UJOIN[border_is][line_is][0]; // LEFT
+        else
+          os << JOIN[border_is][line_is][0]; // LEFT
+      } else {
+        os << p.border_color << s.side;
+      };
     };
 
     // os << "[" << row << "," << p.x << "] ";
     os << *line;
 
     if (style > 0) {
-      os << p.border_color << s.side;
+      if (join) {
+        os << p.border_color;
+        if (door::unicode)
+          os << UJOIN[border_is][line_is][1]; // RIGHT
+        else
+          os << JOIN[border_is][line_is][1]; // RIGHT
+      } else
+        os << p.border_color << s.side;
     };
 
     // os << "row " << row;

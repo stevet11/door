@@ -510,7 +510,7 @@ public:
   void setPadding(const char *padstring, ANSIColor padcolor);
   void setText(std::string &txt);
   void setText(const char *txt);
-
+  const char *getText(void) { return text.c_str(); };
   void setColor(ANSIColor c);
   void setRender(renderFunction rf);
   void setUpdater(updateFunction uf);
