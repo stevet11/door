@@ -175,6 +175,7 @@ Door::Door(std::string dname, int argc, char *argv[])
 
   if (opt.getValue("username") != nullptr) {
     username = opt.getValue("username");
+    handle = username;
   }
 
   if (opt.getFlag("debuggering")) {
@@ -263,7 +264,7 @@ Door::~Door() {
   signal(SIGHUP, SIG_DFL);
   signal(SIGPIPE, SIG_DFL);
 
-  // time thread
+  // stop time thread
   stop_thread.set_value();
   time_thread.join();
   log() << "done" << std::endl;
@@ -275,11 +276,10 @@ Door::~Door() {
 void Door::time_thread_run(std::future<void> future) {
   while (future.wait_for(std::chrono::milliseconds(1)) ==
          std::future_status::timeout) {
-    // std::cout << "Executing the thread....." << std::endl;
+
     std::this_thread::sleep_for(std::chrono::seconds(1));
     ++seconds_elapsed;
-    // log("TICK");
-    // logf << "TICK " << seconds_elapsed << std::endl;
+
     if (seconds_elapsed % 60 == 0) {
       if (time_left > 0)
         --time_left;
@@ -330,9 +330,8 @@ void Door::detect_unicode_and_screen(void) {
   // unicde!
 
   *this << "\x1b[0;30;40m\x1b[2J\x1b[H"; // black on black, clrscr, go home
-  // *this << "\u2615"
-  *this << "\x03\x04" // hearts and diamonds
-        << "\x1b[6n"; // cursor pos
+  *this << "\x03\x04"                    // hearts and diamonds does CP437 work?
+        << "\x1b[6n";                    // cursor pos
   *this << door::nl << "\u2615"
         << "\x1b[6n";                   // hot beverage + cursor pos
   *this << "\x1b[999C\x1b[999B\x1b[6n"; // goto end of screen + cursor pos
@@ -349,23 +348,27 @@ void Door::detect_unicode_and_screen(void) {
     if (len > 0) {
       buffer[len] = 0;
       int x;
-      /*
+
+#ifdef DEBUG_OUTPUT
       for (x = 0; x < len; x++) {
         if (buffer[x] < 0x20)
           logf << std::hex << (int)buffer[x] << " ";
         else
           logf << buffer[x] << " ";
       }
-      */
+#endif
+
       for (x = 0; x < len; x++) {
         if (buffer[x] == 0)
           buffer[x] = ' ';
       }
 
-      /*
+#ifdef DEBUG_OUTPUT
       logf << std::endl;
       logf << "BUFFER [" << (char *)buffer << "]" << std::endl;
-      */
+#endif
+
+      // log detection results
       if (1) {
         std::string cleanbuffer = buffer;
         std::string esc = "\x1b";
@@ -376,7 +379,6 @@ void Door::detect_unicode_and_screen(void) {
 
         logf << "BUFFER [" << cleanbuffer << "]" << std::endl;
       }
-      // this did not work -- because of the null characters in the buffer.
 
       // 1;3R required on David's machine.  I'm not sure why.
       // 1;3R also happens under VSCodium.
@@ -387,8 +389,6 @@ void Door::detect_unicode_and_screen(void) {
           ((strstr(buffer, "2;2R") != nullptr) or
            (strstr(buffer, "2;3R") != nullptr))) {
 
-        // if ((strstr(buffer, "1;2R") != nullptr) or
-        //    (strstr(buffer, "1;3R") != nullptr)) {
         unicode = true;
         log() << "unicode enabled \u2615" << std::endl; // "U0001f926");
       } else {
@@ -396,21 +396,10 @@ void Door::detect_unicode_and_screen(void) {
           full_cp437 = true;
         }
       }
+
       // Get the terminal screen size
-      // \x1b[1;2R\x1b[41;173R
-      // log(buffer);
 
       char *cp;
-      /*
-      cp = strchr(buffer, '\x1b');
-      if (cp != nullptr) {
-        cp = strchr(cp + 1, '\x1b');
-      } else {
-        log() << "Failed terminal size detection.  See buffer:" << std::endl;
-        log() << buffer << std::endl;
-        return;
-      }
-      */
       cp = strrchr(buffer, '\x1b');
 
       if (cp != nullptr) {
@@ -422,8 +411,8 @@ void Door::detect_unicode_and_screen(void) {
           if (cp != nullptr) {
             cp++;
             width = atoi(cp);
-            // magiterm reports 25;923R !
             if (width > 900) {
+              // something went wrong
               width = 0;
               height = 0;
             }
@@ -498,13 +487,23 @@ void Door::parse_dropfile(const char *filepath) {
   has_dropfile = true;
 }
 
+/**
+ * @brief Give ofstream handle for logging
+ *
+ * This appends the current date/time stamp into the logfile, and returns a
+ * reference.
+ *
+ * Example:
+ *
+ * door.log() << "Something bad just happened." << std::endl;
+ *
+ * @return ofstream&
+ */
 ofstream &Door::log(void) {
-  // todo:  have logging
-
   std::time_t t = std::time(nullptr);
   std::tm tm = *std::localtime(&t);
   logf << std::put_time(&tm, "%c ");
-  return logf; // << output << std::endl;
+  return logf;
 }
 
 bool Door::haskey(void) {
@@ -830,11 +829,6 @@ int Door::get_input(void) {
   if (c < 0)
     return 0;
   return c;
-
-  /*
-  tODInputEvent event;
-  od_get_input(&event, OD_NO_TIMEOUT, GETIN_NORMAL);
-  */
 }
 
 /*
@@ -850,7 +844,17 @@ int main() {
     t.tv_usec = 500000;
     select(0, NULL, NULL, NULL, &t);
 }
+ */
 
+/**
+ * @brief Waits secs seconds for a keypress.
+ *
+ * returns key, or -1 on timeout (seconds passed).
+ * -2 hangup
+ * -3 out of time
+ *
+ * @param secs
+ * @return signed int
  */
 signed int Door::sleep_key(int secs) {
   fd_set socket_set;
@@ -888,6 +892,19 @@ signed int Door::sleep_key(int secs) {
   return getkey();
 }
 
+/**
+ * @brief Input a string of requested max length.
+ *
+ * This first sends out max number of spaces, and max number of backspaces. This
+ * will setup the input area.  (If you set a background color of blue, this
+ * would allow that to be seen by the user.)
+ *
+ * It handles input, backspaces / deleting the characters / enter input and
+ * timeout/hangup/out of time.
+ *
+ * @param max
+ * @return std::string
+ */
 std::string Door::input_string(int max) {
   std::string input;
 

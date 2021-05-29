@@ -594,6 +594,12 @@ public:
   void setStyle(BorderStyle bs);
   void setColor(ANSIColor c);
   int getWidth(void) { return width; };
+  int getHeight(void) {
+    if (border_style == BorderStyle::NONE)
+      return lines.size();
+    else
+      return lines.size() + 2;
+  };
   void hide(void);
   void show(void);
   void addLine(std::unique_ptr<Line> l);
