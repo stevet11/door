@@ -624,6 +624,7 @@ public:
   void update(void);
   door::Goto gotoEnd(void);
   std::unique_ptr<Line> spacer_line(bool single);
+  void lineSetBack(ANSIColor back);
   friend std::ostream &operator<<(std::ostream &os, const Panel &p);
 };
 

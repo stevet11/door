@@ -292,6 +292,17 @@ door::Goto Panel::gotoEnd(void) {
 }
 
 /**
+ * @brief Set background of all lines in the panel.
+ *
+ * @param back
+ */
+void Panel::lineSetBack(ANSIColor back) {
+  for (auto &line : lines) {
+    line->setColor(back);
+  }
+}
+
+/**
  * @brief Create a spacer line using block drawing characters.
  *
  * Return a Line of single or double characters the width of the panel.
