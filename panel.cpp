@@ -578,6 +578,37 @@ void Menu::addSelection(char c, const char *line) {
   options.push_back(c);
 }
 
+/**
+ * @brief This allows for menus with updater functions
+ * 
+ * Note:  The update function only needs to update just the text part.
+ * We wrap it with another updateFuntion to append the "[M] " part.
+ * 
+ * @param c 
+ * @param line 
+ * @param update 
+ */
+void Menu::addSelection(char c, const char *line, updateFunction update) {
+  std::string menuline;
+  menuline.reserve(5 + strlen(line));
+  menuline = "[ ] ";
+  menuline[1] = c;
+  menuline += line;
+
+  updateFunction fullUpdate = [c, update](void) -> std::string {
+    std::string text = "[ ] ";
+    text[1] = c;
+    text += update();
+    return text;
+  };
+  
+  std::unique_ptr<Line> l = std::make_unique<Line>(menuline, width);
+  l->setUpdater(fullUpdate);
+  // addLine(std::make_unique<Line>(menuline, width));
+  addLine(std::move(l));
+  options.push_back(c);
+}
+
 void Menu::defaultSelection(int d) { chosen = d; }
 
 char Menu::which(int d) { return options[d]; }

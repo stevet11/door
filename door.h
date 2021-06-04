@@ -668,6 +668,7 @@ public:
   Menu(Menu &&);
 
   void addSelection(char c, const char *line);
+  void addSelection(char c, const char *line, updateFunction update);
   void defaultSelection(int d);
   void setRender(bool selected, renderFunction render);
 
