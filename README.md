@@ -10,7 +10,7 @@ Under the add_executable(your-door your-door.cpp) line, add ``target_link_librar
 
 In main, create the door instance:
 
-```
+```cpp
 #include "door.h"
 
 int main( int argc, char * argv[] ) {
@@ -28,7 +28,7 @@ A line is text that can be updated, and can be colorized by the use of a renderi
 
 If you want all uppercase letters one color, and lowercase another.  That can be done.
 
-```
+```cpp
 /*
  * Custom line rendering fuction.
  * This allows for the status to be one color, and the value to be another.
@@ -82,7 +82,7 @@ scoreLine->setUpdater(scoreUpdate);
 
 A Panel is a group of lines with a known position.
 
-```
+```cpp
 std::unique_ptr<door::Panel> panel = std::make_unique<door::Panel>(50);
 panel->setStyle(door::BorderStyle::NONE);
 // add lines to the panel
@@ -97,7 +97,7 @@ door << panel;
 
 A Panel that displays options for the user to select
 
-```
+```cpp
 // Define a menu starting at 5, 5 with width 25
 door::Menu menu(5, 5, 25);
 
@@ -156,5 +156,5 @@ if ( r == 1 ) {
     // Play Cards
 }
 ...
-
 ```
+
