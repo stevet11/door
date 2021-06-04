@@ -69,12 +69,12 @@ $(function() {
 <h2>Getting Started</h2>
 <p>Clone the door++ project into a sub-directory of your project. In your project CmakeLists.txt file, add <code>add_subdirectory(door++)</code>. Under the add_executable(your-door your-door.cpp) line, add <code>target_link_libraries(your-door door++ pthread)</code>`.</p>
 <p>In main, create the door instance:</p>
-<div class="fragment"><div class="line">#include &quot;door.h&quot;</div>
+<div class="fragment"><div class="line"><span class="preprocessor">#include &quot;door.h&quot;</span></div>
 <div class="line"> </div>
-<div class="line">int main( int argc, char * argv[] ) {</div>
-<div class="line">    door::Door door(&quot;your-door&quot;, argc, argv);</div>
+<div class="line"><span class="keywordtype">int</span> main( <span class="keywordtype">int</span> argc, <span class="keywordtype">char</span> * argv[] ) {</div>
+<div class="line">    <a class="code" href="classdoor_1_1Door.html">door::Door</a> <a class="code" href="namespacedoor.html">door</a>(<span class="stringliteral">&quot;your-door&quot;</span>, argc, argv);</div>
 <div class="line"> </div>
-<div class="line">    door &lt;&lt; &quot;Welcome to Door++&quot; &lt;&lt; door::nl;</div>
+<div class="line">    <a class="code" href="namespacedoor.html">door</a> &lt;&lt; <span class="stringliteral">&quot;Welcome to Door++&quot;</span> &lt;&lt; <a class="code" href="namespacedoor.html#a36352ded72aee66b10e1bda6d3d8efb8">door::nl</a>;</div>
 <div class="line">}</div>
 </div><!-- fragment --><h2>Advanced Features of Door++</h2>
 <ul>
@@ -82,50 +82,50 @@ $(function() {
 </ul>
 <p>A line is text that can be updated, and can be colorized by the use of a rendering function.</p>
 <p>If you want all uppercase letters one color, and lowercase another. That can be done.</p>
-<div class="fragment"><div class="line">/*</div>
-<div class="line"> * Custom line rendering fuction.</div>
-<div class="line"> * This allows for the status to be one color, and the value to be another.</div>
-<div class="line"> * &quot;Score: 500&quot;  </div>
-<div class="line"> * &quot;Score:&quot; would be status color, &quot;500&quot; would be value color.</div>
-<div class="line"> */</div>
-<div class="line">door::renderFunction statusValue(door::ANSIColor status,</div>
-<div class="line">                                 door::ANSIColor value) {</div>
-<div class="line">  door::renderFunction rf = [status,</div>
-<div class="line">                             value](const std::string &amp;txt) -&gt; door::Render {</div>
-<div class="line">    door::Render r(txt);</div>
-<div class="line">    size_t pos = txt.find(&#39;:&#39;);</div>
-<div class="line">    if (pos == std::string::npos) {</div>
-<div class="line">      for (char const &amp;c : txt) {</div>
-<div class="line">        if (std::isdigit(c))</div>
+<div class="fragment"><div class="line"><span class="comment">/*</span></div>
+<div class="line"><span class="comment"> * Custom line rendering fuction.</span></div>
+<div class="line"><span class="comment"> * This allows for the status to be one color, and the value to be another.</span></div>
+<div class="line"><span class="comment"> * &quot;Score: 500&quot;  </span></div>
+<div class="line"><span class="comment"> * &quot;Score:&quot; would be status color, &quot;500&quot; would be value color.</span></div>
+<div class="line"><span class="comment"> */</span></div>
+<div class="line"><a class="code" href="namespacedoor.html#ad9c2405adaa0b5168bc53059b3a978c1">door::renderFunction</a> statusValue(<a class="code" href="classdoor_1_1ANSIColor.html">door::ANSIColor</a> status,</div>
+<div class="line">                                 <a class="code" href="classdoor_1_1ANSIColor.html">door::ANSIColor</a> value) {</div>
+<div class="line">  <a class="code" href="namespacedoor.html#ad9c2405adaa0b5168bc53059b3a978c1">door::renderFunction</a> rf = [status,</div>
+<div class="line">                             value](<span class="keyword">const</span> std::string &amp;txt) -&gt; <a class="code" href="classdoor_1_1Render.html">door::Render</a> {</div>
+<div class="line">    <a class="code" href="classdoor_1_1Render.html">door::Render</a> r(txt);</div>
+<div class="line">    <span class="keywordtype">size_t</span> pos = txt.find(<span class="charliteral">&#39;:&#39;</span>);</div>
+<div class="line">    <span class="keywordflow">if</span> (pos == std::string::npos) {</div>
+<div class="line">      <span class="keywordflow">for</span> (<span class="keywordtype">char</span> <span class="keyword">const</span> &amp;c : txt) {</div>
+<div class="line">        <span class="keywordflow">if</span> (std::isdigit(c))</div>
 <div class="line">          r.append(value);</div>
-<div class="line">        else</div>
+<div class="line">        <span class="keywordflow">else</span></div>
 <div class="line">          r.append(status);</div>
 <div class="line">      }</div>
-<div class="line">    } else {</div>
+<div class="line">    } <span class="keywordflow">else</span> {</div>
 <div class="line">      pos++;</div>
 <div class="line">      r.append(status, pos);</div>
 <div class="line">      r.append(value, txt.length() - pos);</div>
 <div class="line">    }</div>
-<div class="line">    return r;</div>
+<div class="line">    <span class="keywordflow">return</span> r;</div>
 <div class="line">  };</div>
-<div class="line">  return rf;</div>
+<div class="line">  <span class="keywordflow">return</span> rf;</div>
 <div class="line">}</div>
 <div class="line"> </div>
-<div class="line">door::ANSIColor statusColor(door::COLOR::WHITE, door::COLOR::BLUE,</div>
-<div class="line">                            door::ATTR::BOLD);</div>
-<div class="line">door::ANSIColor valueColor(door::COLOR::YELLOW, door::COLOR::BLUE,</div>
-<div class="line">                            door::ATTR::BOLD);</div>
-<div class="line">door::renderFunction svRender = statusValue(statusColor, valueColor);</div>
+<div class="line"><a class="code" href="classdoor_1_1ANSIColor.html">door::ANSIColor</a> statusColor(<a class="code" href="namespacedoor.html#abafe0a9e79349883af3ab2a7fb544366ab5bf627e448384cf3a4c35121ca6008d">door::COLOR::WHITE</a>, <a class="code" href="namespacedoor.html#abafe0a9e79349883af3ab2a7fb544366a1b3e1ee9bff86431dea6b181365ba65f">door::COLOR::BLUE</a>,</div>
+<div class="line">                            <a class="code" href="namespacedoor.html#add24f9a933f9a6e613de6d56854e5c52a2909dd0e0336f10b6da9735b859a3d19">door::ATTR::BOLD</a>);</div>
+<div class="line"><a class="code" href="classdoor_1_1ANSIColor.html">door::ANSIColor</a> valueColor(<a class="code" href="namespacedoor.html#abafe0a9e79349883af3ab2a7fb544366a8a568e5f41b7e4da88fe5c4a00aad34e">door::COLOR::YELLOW</a>, <a class="code" href="namespacedoor.html#abafe0a9e79349883af3ab2a7fb544366a1b3e1ee9bff86431dea6b181365ba65f">door::COLOR::BLUE</a>,</div>
+<div class="line">                            <a class="code" href="namespacedoor.html#add24f9a933f9a6e613de6d56854e5c52a2909dd0e0336f10b6da9735b859a3d19">door::ATTR::BOLD</a>);</div>
+<div class="line"><a class="code" href="namespacedoor.html#ad9c2405adaa0b5168bc53059b3a978c1">door::renderFunction</a> svRender = statusValue(statusColor, valueColor);</div>
 <div class="line"> </div>
-<div class="line">// build the actual line here</div>
-<div class="line">std::unique_ptr&lt;door::Line&gt; scoreLine = std::make_unique&lt;door::Line&gt;(&quot;Score: 0&quot;, 50);</div>
+<div class="line"><span class="comment">// build the actual line here</span></div>
+<div class="line">std::unique_ptr&lt;door::Line&gt; scoreLine = std::make_unique&lt;door::Line&gt;(<span class="stringliteral">&quot;Score: 0&quot;</span>, 50);</div>
 <div class="line">scoreLine-&gt;setRender(svRender);</div>
 <div class="line"> </div>
-<div class="line">// Make the scoreLine automatically update when score changes.</div>
-<div class="line">door::updateFunction scoreUpdate = [score](void) -&gt; std::string {</div>
-<div class="line">    std::string text = &quot;Score: &quot;;</div>
+<div class="line"><span class="comment">// Make the scoreLine automatically update when score changes.</span></div>
+<div class="line"><a class="code" href="namespacedoor.html#adb2697f83f8ce701366e05ed72c97d6e">door::updateFunction</a> scoreUpdate = [score](void) -&gt; std::string {</div>
+<div class="line">    std::string text = <span class="stringliteral">&quot;Score: &quot;</span>;</div>
 <div class="line">    text.append(std::to_string(score));</div>
-<div class="line">    return text;</div>
+<div class="line">    <span class="keywordflow">return</span> text;</div>
 <div class="line">};</div>
 <div class="line"> </div>
 <div class="line">scoreLine-&gt;setUpdater(scoreUpdate);</div>
@@ -134,77 +134,93 @@ $(function() {
 </ul>
 <p>A Panel is a group of lines with a known position.</p>
 <div class="fragment"><div class="line">std::unique_ptr&lt;door::Panel&gt; panel = std::make_unique&lt;door::Panel&gt;(50);</div>
-<div class="line">panel-&gt;setStyle(door::BorderStyle::NONE);</div>
-<div class="line">// add lines to the panel</div>
+<div class="line">panel-&gt;setStyle(<a class="code" href="namespacedoor.html#a08afbc9eecb6efd7d4c741023b11db91ab50339a10e1de285ac99d4c3990b8693">door::BorderStyle::NONE</a>);</div>
+<div class="line"><span class="comment">// add lines to the panel</span></div>
 <div class="line">panel-&gt;addLines(std::move(scoreLine));</div>
 <div class="line"> </div>
 <div class="line">panel-&gt;set(5, 5);</div>
 <div class="line">panel-&gt;update();</div>
-<div class="line">door &lt;&lt; panel;</div>
+<div class="line"><a class="code" href="namespacedoor.html">door</a> &lt;&lt; panel;</div>
 </div><!-- fragment --><ul>
 <li><a class="el" href="classdoor_1_1Menu.html">door::Menu</a></li>
 </ul>
 <p>A Panel that displays options for the user to select</p>
-<div class="fragment"><div class="line">// Define a menu starting at 5, 5 with width 25</div>
-<div class="line">door::Menu menu(5, 5, 25);</div>
+<div class="fragment"><div class="line"><span class="comment">// Define a menu starting at 5, 5 with width 25</span></div>
+<div class="line"><a class="code" href="classdoor_1_1Menu.html">door::Menu</a> menu(5, 5, 25);</div>
 <div class="line"> </div>
-<div class="line">// Set border color</div>
-<div class="line">door::ANSIColor border_color(door::COLOR::CYAN, door::COLOR::BLUE);</div>
+<div class="line"><span class="comment">// Set border color</span></div>
+<div class="line"><a class="code" href="classdoor_1_1ANSIColor.html">door::ANSIColor</a> border_color(<a class="code" href="namespacedoor.html#abafe0a9e79349883af3ab2a7fb544366a344dd8cd533280795b9db82ef0c92749">door::COLOR::CYAN</a>, <a class="code" href="namespacedoor.html#abafe0a9e79349883af3ab2a7fb544366a1b3e1ee9bff86431dea6b181365ba65f">door::COLOR::BLUE</a>);</div>
 <div class="line">m.setColor(border_color);</div>
 <div class="line"> </div>
-<div class="line">// Set the Menu Title</div>
-<div class="line">door::Line mtitle(&quot;Main Menu&quot;);</div>
-<div class="line">door::ANSIColor title_color(door::COLOR::CYAN, door::COLOR::BLUE, door::ATTR::BOLD);</div>
+<div class="line"><span class="comment">// Set the Menu Title</span></div>
+<div class="line"><a class="code" href="classdoor_1_1Line.html">door::Line</a> mtitle(<span class="stringliteral">&quot;Main Menu&quot;</span>);</div>
+<div class="line"><a class="code" href="classdoor_1_1ANSIColor.html">door::ANSIColor</a> title_color(<a class="code" href="namespacedoor.html#abafe0a9e79349883af3ab2a7fb544366a344dd8cd533280795b9db82ef0c92749">door::COLOR::CYAN</a>, <a class="code" href="namespacedoor.html#abafe0a9e79349883af3ab2a7fb544366a1b3e1ee9bff86431dea6b181365ba65f">door::COLOR::BLUE</a>, <a class="code" href="namespacedoor.html#add24f9a933f9a6e613de6d56854e5c52a2909dd0e0336f10b6da9735b859a3d19">door::ATTR::BOLD</a>);</div>
 <div class="line">mtitle.setColor(title_color);</div>
-<div class="line">mtitle.setPadding(&quot; &quot;, title_color);</div>
+<div class="line">mtitle.setPadding(<span class="stringliteral">&quot; &quot;</span>, title_color);</div>
 <div class="line">m.setTitle(std::make_unique&lt;door::Line&gt;(mtitle), 1);</div>
 <div class="line"> </div>
-<div class="line">// Define colors for the menu</div>
-<div class="line">// menu line selected</div>
-<div class="line">m.setRender(true, door::Menu::makeRender(</div>
-<div class="line">                  door::ANSIColor(door::COLOR::CYAN, door::ATTR::BOLD),</div>
-<div class="line">                  door::ANSIColor(door::COLOR::BLUE, door::ATTR::BOLD),</div>
-<div class="line">                  door::ANSIColor(door::COLOR::CYAN, door::ATTR::BOLD),</div>
-<div class="line">                  door::ANSIColor(door::COLOR::BLUE, door::ATTR::BOLD)));</div>
+<div class="line"><span class="comment">// Define colors for the menu</span></div>
+<div class="line"><span class="comment">// menu line selected</span></div>
+<div class="line">m.setRender(<span class="keyword">true</span>, <a class="code" href="classdoor_1_1Menu.html#aff858b2112970b66917a30ad3c00609d">door::Menu::makeRender</a>(</div>
+<div class="line">                  <a class="code" href="classdoor_1_1ANSIColor.html">door::ANSIColor</a>(<a class="code" href="namespacedoor.html#abafe0a9e79349883af3ab2a7fb544366a344dd8cd533280795b9db82ef0c92749">door::COLOR::CYAN</a>, <a class="code" href="namespacedoor.html#add24f9a933f9a6e613de6d56854e5c52a2909dd0e0336f10b6da9735b859a3d19">door::ATTR::BOLD</a>),</div>
+<div class="line">                  <a class="code" href="classdoor_1_1ANSIColor.html">door::ANSIColor</a>(<a class="code" href="namespacedoor.html#abafe0a9e79349883af3ab2a7fb544366a1b3e1ee9bff86431dea6b181365ba65f">door::COLOR::BLUE</a>, <a class="code" href="namespacedoor.html#add24f9a933f9a6e613de6d56854e5c52a2909dd0e0336f10b6da9735b859a3d19">door::ATTR::BOLD</a>),</div>
+<div class="line">                  <a class="code" href="classdoor_1_1ANSIColor.html">door::ANSIColor</a>(<a class="code" href="namespacedoor.html#abafe0a9e79349883af3ab2a7fb544366a344dd8cd533280795b9db82ef0c92749">door::COLOR::CYAN</a>, <a class="code" href="namespacedoor.html#add24f9a933f9a6e613de6d56854e5c52a2909dd0e0336f10b6da9735b859a3d19">door::ATTR::BOLD</a>),</div>
+<div class="line">                  <a class="code" href="classdoor_1_1ANSIColor.html">door::ANSIColor</a>(<a class="code" href="namespacedoor.html#abafe0a9e79349883af3ab2a7fb544366a1b3e1ee9bff86431dea6b181365ba65f">door::COLOR::BLUE</a>, <a class="code" href="namespacedoor.html#add24f9a933f9a6e613de6d56854e5c52a2909dd0e0336f10b6da9735b859a3d19">door::ATTR::BOLD</a>)));</div>
 <div class="line"> </div>
-<div class="line">// menu line unselected</div>
-<div class="line">m.setRender(false, door::Menu::makeRender(</div>
-<div class="line">                   door::ANSIColor(door::COLOR::YELLOW, door::COLOR::BLUE,</div>
-<div class="line">                   door::ATTR::BOLD),</div>
-<div class="line">                   door::ANSIColor(door::COLOR::WHITE, door::COLOR::BLUE,</div>
-<div class="line">                   door::ATTR::BOLD),</div>
-<div class="line">                   door::ANSIColor(door::COLOR::YELLOW, door::COLOR::BLUE,</div>
-<div class="line">                   door::ATTR::BOLD),</div>
-<div class="line">                   door::ANSIColor(door::COLOR::CYAN, door::COLOR::BLUE,</div>
-<div class="line">                   door::ATTR::BOLD)));</div>
+<div class="line"><span class="comment">// menu line unselected</span></div>
+<div class="line">m.setRender(<span class="keyword">false</span>, <a class="code" href="classdoor_1_1Menu.html#aff858b2112970b66917a30ad3c00609d">door::Menu::makeRender</a>(</div>
+<div class="line">                   <a class="code" href="classdoor_1_1ANSIColor.html">door::ANSIColor</a>(<a class="code" href="namespacedoor.html#abafe0a9e79349883af3ab2a7fb544366a8a568e5f41b7e4da88fe5c4a00aad34e">door::COLOR::YELLOW</a>, <a class="code" href="namespacedoor.html#abafe0a9e79349883af3ab2a7fb544366a1b3e1ee9bff86431dea6b181365ba65f">door::COLOR::BLUE</a>,</div>
+<div class="line">                   <a class="code" href="namespacedoor.html#add24f9a933f9a6e613de6d56854e5c52a2909dd0e0336f10b6da9735b859a3d19">door::ATTR::BOLD</a>),</div>
+<div class="line">                   <a class="code" href="classdoor_1_1ANSIColor.html">door::ANSIColor</a>(<a class="code" href="namespacedoor.html#abafe0a9e79349883af3ab2a7fb544366ab5bf627e448384cf3a4c35121ca6008d">door::COLOR::WHITE</a>, <a class="code" href="namespacedoor.html#abafe0a9e79349883af3ab2a7fb544366a1b3e1ee9bff86431dea6b181365ba65f">door::COLOR::BLUE</a>,</div>
+<div class="line">                   <a class="code" href="namespacedoor.html#add24f9a933f9a6e613de6d56854e5c52a2909dd0e0336f10b6da9735b859a3d19">door::ATTR::BOLD</a>),</div>
+<div class="line">                   <a class="code" href="classdoor_1_1ANSIColor.html">door::ANSIColor</a>(<a class="code" href="namespacedoor.html#abafe0a9e79349883af3ab2a7fb544366a8a568e5f41b7e4da88fe5c4a00aad34e">door::COLOR::YELLOW</a>, <a class="code" href="namespacedoor.html#abafe0a9e79349883af3ab2a7fb544366a1b3e1ee9bff86431dea6b181365ba65f">door::COLOR::BLUE</a>,</div>
+<div class="line">                   <a class="code" href="namespacedoor.html#add24f9a933f9a6e613de6d56854e5c52a2909dd0e0336f10b6da9735b859a3d19">door::ATTR::BOLD</a>),</div>
+<div class="line">                   <a class="code" href="classdoor_1_1ANSIColor.html">door::ANSIColor</a>(<a class="code" href="namespacedoor.html#abafe0a9e79349883af3ab2a7fb544366a344dd8cd533280795b9db82ef0c92749">door::COLOR::CYAN</a>, <a class="code" href="namespacedoor.html#abafe0a9e79349883af3ab2a7fb544366a1b3e1ee9bff86431dea6b181365ba65f">door::COLOR::BLUE</a>,</div>
+<div class="line">                   <a class="code" href="namespacedoor.html#add24f9a933f9a6e613de6d56854e5c52a2909dd0e0336f10b6da9735b859a3d19">door::ATTR::BOLD</a>)));</div>
 <div class="line"> </div>
-<div class="line">// Build the menu</div>
-<div class="line">// First char is [ char ], followed by the text.</div>
-<div class="line">// The arrow keys can be used to select the menu option, or</div>
-<div class="line">// hitting the character.</div>
+<div class="line"><span class="comment">// Build the menu</span></div>
+<div class="line"><span class="comment">// First char is [ char ], followed by the text.</span></div>
+<div class="line"><span class="comment">// The arrow keys can be used to select the menu option, or</span></div>
+<div class="line"><span class="comment">// hitting the character.</span></div>
 <div class="line"> </div>
-<div class="line">m.addSelection(&#39;P&#39;, &quot;Play Cards&quot;);</div>
-<div class="line">m.addSelection(&#39;S&#39;, &quot;View Scores&quot;);</div>
-<div class="line">m.addSelection(&#39;C&#39;, &quot;Configure&quot;);</div>
-<div class="line">m.addSelection(&#39;H&#39;, &quot;Help&quot;);</div>
-<div class="line">m.addSelection(&#39;A&#39;, &quot;About this game&quot;);</div>
-<div class="line">m.addSelection(&#39;Q&#39;, &quot;Quit&quot;);</div>
+<div class="line">m.addSelection(<span class="charliteral">&#39;P&#39;</span>, <span class="stringliteral">&quot;Play Cards&quot;</span>);</div>
+<div class="line">m.addSelection(<span class="charliteral">&#39;S&#39;</span>, <span class="stringliteral">&quot;View Scores&quot;</span>);</div>
+<div class="line">m.addSelection(<span class="charliteral">&#39;C&#39;</span>, <span class="stringliteral">&quot;Configure&quot;</span>);</div>
+<div class="line">m.addSelection(<span class="charliteral">&#39;H&#39;</span>, <span class="stringliteral">&quot;Help&quot;</span>);</div>
+<div class="line">m.addSelection(<span class="charliteral">&#39;A&#39;</span>, <span class="stringliteral">&quot;About this game&quot;</span>);</div>
+<div class="line">m.addSelection(<span class="charliteral">&#39;Q&#39;</span>, <span class="stringliteral">&quot;Quit&quot;</span>);</div>
 <div class="line"> </div>
-<div class="line">int r;</div>
+<div class="line"><span class="keywordtype">int</span> r;</div>
 <div class="line"> </div>
-<div class="line">// Render the menu and prompt for input</div>
-<div class="line">r = m.choose(door);</div>
+<div class="line"><span class="comment">// Render the menu and prompt for input</span></div>
+<div class="line">r = m.choose(<a class="code" href="namespacedoor.html">door</a>);</div>
 <div class="line"> </div>
-<div class="line">if (r &lt; 0) {</div>
-<div class="line">    // timeout or out of time</div>
+<div class="line"><span class="keywordflow">if</span> (r &lt; 0) {</div>
+<div class="line">    <span class="comment">// timeout or out of time</span></div>
 <div class="line">}</div>
 <div class="line"> </div>
-<div class="line">if ( r == 1 ) {</div>
-<div class="line">    // Play Cards</div>
+<div class="line"><span class="keywordflow">if</span> ( r == 1 ) {</div>
+<div class="line">    <span class="comment">// Play Cards</span></div>
 <div class="line">}</div>
 <div class="line">...</div>
 </div><!-- fragment --> </div></div><!-- PageDoc -->
 </div><!-- contents -->
+<div class="ttc" id="aclassdoor_1_1Door_html"><div class="ttname"><a href="classdoor_1_1Door.html">door::Door</a></div><div class="ttdef"><b>Definition:</b> door.h:193</div></div>
+<div class="ttc" id="anamespacedoor_html_add24f9a933f9a6e613de6d56854e5c52a2909dd0e0336f10b6da9735b859a3d19"><div class="ttname"><a href="namespacedoor.html#add24f9a933f9a6e613de6d56854e5c52a2909dd0e0336f10b6da9735b859a3d19">door::ATTR::BOLD</a></div><div class="ttdeci">@ BOLD</div><div class="ttdoc">BOLD is the same as BRIGHT.</div></div>
+<div class="ttc" id="anamespacedoor_html_abafe0a9e79349883af3ab2a7fb544366a344dd8cd533280795b9db82ef0c92749"><div class="ttname"><a href="namespacedoor.html#abafe0a9e79349883af3ab2a7fb544366a344dd8cd533280795b9db82ef0c92749">door::COLOR::CYAN</a></div><div class="ttdeci">@ CYAN</div><div class="ttdoc">CYAN (6)</div></div>
+<div class="ttc" id="aclassdoor_1_1ANSIColor_html"><div class="ttname"><a href="classdoor_1_1ANSIColor.html">door::ANSIColor</a></div><div class="ttdoc">Foreground, Background and Attributes.</div><div class="ttdef"><b>Definition:</b> door.h:131</div></div>
+<div class="ttc" id="aclassdoor_1_1Menu_html"><div class="ttname"><a href="classdoor_1_1Menu.html">door::Menu</a></div><div class="ttdef"><b>Definition:</b> door.h:672</div></div>
+<div class="ttc" id="anamespacedoor_html_ad9c2405adaa0b5168bc53059b3a978c1"><div class="ttname"><a href="namespacedoor.html#ad9c2405adaa0b5168bc53059b3a978c1">door::renderFunction</a></div><div class="ttdeci">std::function&lt; Render(const std::string &amp;)&gt; renderFunction</div><div class="ttdoc">Render output function.</div><div class="ttdef"><b>Definition:</b> door.h:341</div></div>
+<div class="ttc" id="anamespacedoor_html_a08afbc9eecb6efd7d4c741023b11db91ab50339a10e1de285ac99d4c3990b8693"><div class="ttname"><a href="namespacedoor.html#a08afbc9eecb6efd7d4c741023b11db91ab50339a10e1de285ac99d4c3990b8693">door::BorderStyle::NONE</a></div><div class="ttdeci">@ NONE</div><div class="ttdoc">NONE (0)</div></div>
+<div class="ttc" id="aclassdoor_1_1Line_html"><div class="ttname"><a href="classdoor_1_1Line.html">door::Line</a></div><div class="ttdoc">Text and ANSIColor.</div><div class="ttdef"><b>Definition:</b> door.h:488</div></div>
+<div class="ttc" id="anamespacedoor_html_adb2697f83f8ce701366e05ed72c97d6e"><div class="ttname"><a href="namespacedoor.html#adb2697f83f8ce701366e05ed72c97d6e">door::updateFunction</a></div><div class="ttdeci">std::function&lt; std::string(void)&gt; updateFunction</div><div class="ttdef"><b>Definition:</b> door.h:360</div></div>
+<div class="ttc" id="anamespacedoor_html_a36352ded72aee66b10e1bda6d3d8efb8"><div class="ttname"><a href="namespacedoor.html#a36352ded72aee66b10e1bda6d3d8efb8">door::nl</a></div><div class="ttdeci">NewLine nl</div><div class="ttdef"><b>Definition:</b> door.cpp:1170</div></div>
+<div class="ttc" id="anamespacedoor_html_abafe0a9e79349883af3ab2a7fb544366a8a568e5f41b7e4da88fe5c4a00aad34e"><div class="ttname"><a href="namespacedoor.html#abafe0a9e79349883af3ab2a7fb544366a8a568e5f41b7e4da88fe5c4a00aad34e">door::COLOR::YELLOW</a></div><div class="ttdeci">@ YELLOW</div><div class="ttdoc">YELLOW (3)</div></div>
+<div class="ttc" id="anamespacedoor_html_abafe0a9e79349883af3ab2a7fb544366ab5bf627e448384cf3a4c35121ca6008d"><div class="ttname"><a href="namespacedoor.html#abafe0a9e79349883af3ab2a7fb544366ab5bf627e448384cf3a4c35121ca6008d">door::COLOR::WHITE</a></div><div class="ttdeci">@ WHITE</div><div class="ttdoc">WHITE (7)</div></div>
+<div class="ttc" id="anamespacedoor_html"><div class="ttname"><a href="namespacedoor.html">door</a></div><div class="ttdoc">The BBS door project. This is an attempt at writing a C++ BBS door toolkit.</div><div class="ttdef"><b>Definition:</b> ansicolor.cpp:9</div></div>
+<div class="ttc" id="aclassdoor_1_1Menu_html_aff858b2112970b66917a30ad3c00609d"><div class="ttname"><a href="classdoor_1_1Menu.html#aff858b2112970b66917a30ad3c00609d">door::Menu::makeRender</a></div><div class="ttdeci">static renderFunction makeRender(ANSIColor c1, ANSIColor c2, ANSIColor c3, ANSIColor c4)</div><div class="ttdef"><b>Definition:</b> panel.cpp:670</div></div>
+<div class="ttc" id="anamespacedoor_html_abafe0a9e79349883af3ab2a7fb544366a1b3e1ee9bff86431dea6b181365ba65f"><div class="ttname"><a href="namespacedoor.html#abafe0a9e79349883af3ab2a7fb544366a1b3e1ee9bff86431dea6b181365ba65f">door::COLOR::BLUE</a></div><div class="ttdeci">@ BLUE</div><div class="ttdoc">BLUE (4)</div></div>
+<div class="ttc" id="aclassdoor_1_1Render_html"><div class="ttname"><a href="classdoor_1_1Render.html">door::Render</a></div><div class="ttdoc">Rendering a string with ANSIColor.</div><div class="ttdef"><b>Definition:</b> door.h:307</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">
