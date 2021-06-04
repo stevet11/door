@@ -1,0 +1,4 @@
+<map id="door::Line" name="door::Line">
+<area shape="rect" id="node1" title="Text and ANSIColor." alt="" coords="24,109,111,136"/>
+<area shape="rect" id="node2" href="$classdoor_1_1ANSIColor.html" title="Foreground, Background and Attributes." alt="" coords="5,5,129,32"/>
+</map>
