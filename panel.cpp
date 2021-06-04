@@ -593,14 +593,15 @@ void Menu::addSelection(char c, const char *line, updateFunction update) {
   menuline.reserve(5 + strlen(line));
   menuline = "[ ] ";
   menuline[1] = c;
-  menuline += line;
 
-  updateFunction fullUpdate = [c, update](void) -> std::string {
-    std::string text = "[ ] ";
-    text[1] = c;
+  updateFunction fullUpdate = [menuline, update](void) -> std::string {
+    std::string text = menuline;
     text += update();
     return text;
   };
+
+  menuline += line;
+
   
   std::unique_ptr<Line> l = std::make_unique<Line>(menuline, width);
   l->setUpdater(fullUpdate);
