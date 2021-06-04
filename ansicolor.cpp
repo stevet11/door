@@ -1,6 +1,11 @@
 #include "door.h"
 #include <string>
 
+/**
+ * @file
+ * @brief ANSIColor
+ */
+
 namespace door {
 
 /**

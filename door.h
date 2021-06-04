@@ -316,9 +316,24 @@ public:
 };
 
 /**
- * This defines the render output function.  This is used
- * to define the setRender functions, as well as the creation
- * of render functions.
+ * This defines the render output function.  Given the line text, we output the
+ * color codes needs to display the line.
+ *
+ * ~~~{.cpp}
+ * door::ANSIColor upperColor, lowerColor;
+ *
+ * door::RenderFunction render = [upperColor, lowerColor]
+ *                               (const std::string &text) -> door::Render {
+ *   door::Render r(text);
+ *   for (char const &c : text) {
+ *     if (std::isupper(c))
+ *       r.append(upperColor);
+ *     else
+ *       r.append(lowerColor);
+ *   }
+ *   return r;
+ * };
+ * ~~~
  *
  * @brief Render output function
  *
@@ -329,6 +344,18 @@ typedef std::function<Render(const std::string &)> renderFunction;
  * This defines the update function.
  *
  * This updates the text.
+ *
+ * ~~~{.cpp}
+ * int score = 0;
+ *
+ * door::updateFunction updater = [](void) -> std::string {
+ *   std::string text = "Score: ";
+ *   text += std::to_string(score);
+ *   return text;
+ * };
+ *
+ * fancyLine.setUpdater(updater);
+ * ~~~
  */
 typedef std::function<std::string(void)> updateFunction;
 

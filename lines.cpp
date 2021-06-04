@@ -1,6 +1,11 @@
 #include "door.h"
 #include "utf8.h"
 
+/**
+ * @file
+ * @brief Line
+ */
+
 namespace door {
 
 #ifdef EXPERIMENTAL

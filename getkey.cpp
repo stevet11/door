@@ -10,6 +10,11 @@
 #include <signal.h>
 #include <unistd.h>
 
+/**
+ * @file
+ * @brief Key and door input routines
+ */
+
 void done(int signal) {
   std::cout << "\r\nWORP WORP\r\n";
   std::cout.flush();

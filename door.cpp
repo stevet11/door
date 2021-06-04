@@ -22,6 +22,11 @@
 #include <algorithm>
 #include <iostream>
 
+/**
+ * @file
+ * @brief Door
+ */
+
 /*
 
 My strategy here has failed.

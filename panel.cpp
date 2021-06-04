@@ -2,6 +2,20 @@
 #include <set>
 #include <string.h>
 
+/**
+ * @file
+ * @brief Panels and Menus
+ */
+
+/**
+ * @example menu-example.cpp
+ *
+ * @brief Example using menus
+ *
+ * This example shows a menu, and demonstrates the new menu update ability.
+ *
+ */
+
 // #include <memory>
 
 namespace door {
@@ -57,6 +71,12 @@ Panel::Panel(const Panel &original) : border_color(original.border_color) {
 }
 */
 
+/**
+ * @brief Set the panels X and Y screen position.
+ *
+ * @param xp
+ * @param yp
+ */
 void Panel::set(int xp, int yp) {
   x = xp;
   y = yp;
@@ -511,6 +531,16 @@ renderFunction Menu::defaultUnselectedRender =
                      ANSIColor(COLOR::WHITE, COLOR::BLUE, ATTR::BOLD),
                      ANSIColor(COLOR::YELLOW, COLOR::BLUE, ATTR::BOLD));
 
+/**
+ * @brief Construct a new Menu object
+ *
+ * Set the x, y screen location for the start of the menu, and the width.
+ * The location can be changed via \ref Panel::set
+ *
+ * @param x
+ * @param y
+ * @param width
+ */
 Menu::Menu(int x, int y, int width) : Panel(x, y, width) {
   setStyle(BorderStyle::DOUBLE);
   // Setup initial sensible default values.
@@ -580,13 +610,13 @@ void Menu::addSelection(char c, const char *line) {
 
 /**
  * @brief This allows for menus with updater functions
- * 
- * Note:  The update function only needs to update just the text part.
+ *
+ * Note:  The update function only needs to update just the line text.
  * We wrap it with another updateFuntion to append the "[M] " part.
- * 
- * @param c 
- * @param line 
- * @param update 
+ *
+ * @param c
+ * @param line
+ * @param update
  */
 void Menu::addSelection(char c, const char *line, updateFunction update) {
   std::string menuline;
@@ -602,7 +632,6 @@ void Menu::addSelection(char c, const char *line, updateFunction update) {
 
   menuline += line;
 
-  
   std::unique_ptr<Line> l = std::make_unique<Line>(menuline, width);
   l->setUpdater(fullUpdate);
   // addLine(std::make_unique<Line>(menuline, width));
