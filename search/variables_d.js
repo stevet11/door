@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['uboxes_188',['UBOXES',['../namespacedoor.html#aeafa2ff6deb9ddddaab458b89f10c4e6',1,'door']]],
-  ['updater_189',['updater',['../classdoor_1_1Line.html#afe9688b3f58080fe437c0efaf7ab2949',1,'door::Line']]]
+  ['savecursor_223',['SaveCursor',['../namespacedoor.html#aa6a7c86274470fd22e45676ba6eebb36',1,'door']]],
+  ['side_224',['side',['../structdoor_1_1box__styles.html#a6460a57a2a209669517babb4ab2f641f',1,'door::box_styles']]]
 ];

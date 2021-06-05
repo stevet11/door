@@ -1,21 +1,18 @@
 <map id="panel.cpp" name="panel.cpp">
-<area shape="rect" id="node1" title="Panels and Menus." alt="" coords="655,5,741,32"/>
-<area shape="rect" id="node2" href="$door_8h_source.html" title=" " alt="" coords="589,80,652,107"/>
-<area shape="rect" id="node18" title=" " alt="" coords="677,80,719,107"/>
-<area shape="rect" id="node19" title=" " alt="" coords="744,80,815,107"/>
-<area shape="rect" id="node3" href="$anyoption_8h_source.html" title=" " alt="" coords="181,155,279,181"/>
-<area shape="rect" id="node5" title=" " alt="" coords="5,229,79,256"/>
-<area shape="rect" id="node6" title=" " alt="" coords="373,229,453,256"/>
-<area shape="rect" id="node9" title=" " alt="" coords="354,155,421,181"/>
-<area shape="rect" id="node10" title=" " alt="" coords="445,155,503,181"/>
-<area shape="rect" id="node11" title=" " alt="" coords="528,155,615,181"/>
-<area shape="rect" id="node12" title=" " alt="" coords="639,155,701,181"/>
-<area shape="rect" id="node13" title=" " alt="" coords="725,155,802,181"/>
-<area shape="rect" id="node14" title=" " alt="" coords="827,155,903,181"/>
-<area shape="rect" id="node15" title=" " alt="" coords="927,155,989,181"/>
-<area shape="rect" id="node16" title=" " alt="" coords="1013,155,1097,181"/>
-<area shape="rect" id="node17" title=" " alt="" coords="1122,155,1197,181"/>
-<area shape="rect" id="node4" title=" " alt="" coords="103,229,170,256"/>
-<area shape="rect" id="node7" title=" " alt="" coords="195,229,265,256"/>
-<area shape="rect" id="node8" title=" " alt="" coords="290,229,349,256"/>
+<area shape="rect" id="node1" title="Panels and Menus." alt="" coords="623,5,708,32"/>
+<area shape="rect" id="node2" href="$door_8h_source.html" title=" " alt="" coords="557,80,619,107"/>
+<area shape="rect" id="node15" title=" " alt="" coords="644,80,687,107"/>
+<area shape="rect" id="node16" title=" " alt="" coords="711,80,782,107"/>
+<area shape="rect" id="node3" title=" " alt="" coords="5,155,104,181"/>
+<area shape="rect" id="node4" title=" " alt="" coords="128,155,195,181"/>
+<area shape="rect" id="node5" title=" " alt="" coords="219,155,277,181"/>
+<area shape="rect" id="node6" title=" " alt="" coords="302,155,375,181"/>
+<area shape="rect" id="node7" title=" " alt="" coords="399,155,486,181"/>
+<area shape="rect" id="node8" title=" " alt="" coords="511,155,572,181"/>
+<area shape="rect" id="node9" title=" " alt="" coords="596,155,676,181"/>
+<area shape="rect" id="node10" title=" " alt="" coords="700,155,777,181"/>
+<area shape="rect" id="node11" title=" " alt="" coords="802,155,878,181"/>
+<area shape="rect" id="node12" title=" " alt="" coords="902,155,965,181"/>
+<area shape="rect" id="node13" title=" " alt="" coords="989,155,1073,181"/>
+<area shape="rect" id="node14" title=" " alt="" coords="1097,155,1172,181"/>
 </map>

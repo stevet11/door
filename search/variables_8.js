@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['outputs_175',['outputs',['../classdoor_1_1Render.html#a887fd73649a7e63257cc695e2756bc66',1,'door::Render']]]
+  ['ml_210',['ml',['../structdoor_1_1box__styles.html#acc2aadc7972404de7d5fe1e12684f17a',1,'door::box_styles']]],
+  ['mr_211',['mr',['../structdoor_1_1box__styles.html#a94ca06e14f6297e62fbc24664f9576ee',1,'door::box_styles']]]
 ];

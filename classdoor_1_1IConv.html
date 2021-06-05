@@ -73,14 +73,17 @@ $(function() {
 <div class="title">door::IConv Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p>Converts from one encoding to another. Uses iconv (international conversion) API.  
+ <a href="classdoor_1_1IConv.html#details">More...</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:aa201b347d3982a6b96fc66a9edb36279"><td class="memItemLeft" align="right" valign="top"><a id="aa201b347d3982a6b96fc66a9edb36279"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>IConv</b> (const char *to, const char *from)</td></tr>
+<tr class="memitem:aa201b347d3982a6b96fc66a9edb36279"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdoor_1_1IConv.html#aa201b347d3982a6b96fc66a9edb36279">IConv</a> (const char *to, const char *from)</td></tr>
+<tr class="memdesc:aa201b347d3982a6b96fc66a9edb36279"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a new <a class="el" href="classdoor_1_1IConv.html#aa201b347d3982a6b96fc66a9edb36279" title="Construct a new IConv::IConv object.">IConv::IConv</a> object.  <a href="classdoor_1_1IConv.html#aa201b347d3982a6b96fc66a9edb36279">More...</a><br /></td></tr>
 <tr class="separator:aa201b347d3982a6b96fc66a9edb36279"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a65f19364b9b6a219dd88e8d8f18db8dc"><td class="memItemLeft" align="right" valign="top"><a id="a65f19364b9b6a219dd88e8d8f18db8dc"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>convert</b> (char *input, char *output, size_t outbufsize)</td></tr>
+<tr class="memitem:a65f19364b9b6a219dd88e8d8f18db8dc"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdoor_1_1IConv.html#a65f19364b9b6a219dd88e8d8f18db8dc">convert</a> (char *input, char *output, size_t outbufsize)</td></tr>
+<tr class="memdesc:a65f19364b9b6a219dd88e8d8f18db8dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calls iconv API to do the conversion.  <a href="classdoor_1_1IConv.html#a65f19364b9b6a219dd88e8d8f18db8dc">More...</a><br /></td></tr>
 <tr class="separator:a65f19364b9b6a219dd88e8d8f18db8dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
@@ -89,6 +92,92 @@ Private Attributes</h2></td></tr>
 iconv_t&#160;</td><td class="memItemRight" valign="bottom"><b>ic</b></td></tr>
 <tr class="separator:ab64b4dfad21ad709b1a17556c3f197be"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Converts from one encoding to another. Uses iconv (international conversion) API. </p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="aa201b347d3982a6b96fc66a9edb36279"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa201b347d3982a6b96fc66a9edb36279">&#9670;&nbsp;</a></span>IConv()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">door::IConv::IConv </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>to</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>from</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Construct a new <a class="el" href="classdoor_1_1IConv.html#aa201b347d3982a6b96fc66a9edb36279" title="Construct a new IConv::IConv object.">IConv::IConv</a> object. </p>
+<p>Give the encodings that you want to convert to and from. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">to</td><td></td></tr>
+    <tr><td class="paramname">from</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a65f19364b9b6a219dd88e8d8f18db8dc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a65f19364b9b6a219dd88e8d8f18db8dc">&#9670;&nbsp;</a></span>convert()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int door::IConv::convert </td>
+          <td>(</td>
+          <td class="paramtype">char *&#160;</td>
+          <td class="paramname"><em>input</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *&#160;</td>
+          <td class="paramname"><em>output</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>outbufsize</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Calls iconv API to do the conversion. </p>
+<p>Buffers must be provided. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">input</td><td></td></tr>
+    <tr><td class="paramname">output</td><td></td></tr>
+    <tr><td class="paramname">outbufsize</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>int </dd></dl>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li><a class="el" href="door_8cpp.html">door.cpp</a></li>
 </ul>

@@ -187,8 +187,8 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>offset</b></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="friends"></a>
 Friends</h2></td></tr>
-<tr class="memitem:acc188acc0dfd6127ca4a51a6508b8c62"><td class="memItemLeft" align="right" valign="top"><a id="acc188acc0dfd6127ca4a51a6508b8c62"></a>
-std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator&lt;&lt;</b> (std::ostream &amp;os, const <a class="el" href="classdoor_1_1Panel.html">Panel</a> &amp;p)</td></tr>
+<tr class="memitem:acc188acc0dfd6127ca4a51a6508b8c62"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdoor_1_1Panel.html#acc188acc0dfd6127ca4a51a6508b8c62">operator&lt;&lt;</a> (std::ostream &amp;os, const <a class="el" href="classdoor_1_1Panel.html">Panel</a> &amp;p)</td></tr>
+<tr class="memdesc:acc188acc0dfd6127ca4a51a6508b8c62"><td class="mdescLeft">&#160;</td><td class="mdescRight">Output panel to stream.  <a href="classdoor_1_1Panel.html#acc188acc0dfd6127ca4a51a6508b8c62">More...</a><br /></td></tr>
 <tr class="separator:acc188acc0dfd6127ca4a51a6508b8c62"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Member Function Documentation</h2>
@@ -311,6 +311,53 @@ std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operato
 false </dd></dl>
 <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="menu-example_8cpp-example.html#a12">menu-example.cpp</a>.</dd>
 </dl>
+
+</div>
+</div>
+<h2 class="groupheader">Friends And Related Function Documentation</h2>
+<a id="acc188acc0dfd6127ca4a51a6508b8c62"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acc188acc0dfd6127ca4a51a6508b8c62">&#9670;&nbsp;</a></span>operator&lt;&lt;</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::ostream&amp; operator&lt;&lt; </td>
+          <td>(</td>
+          <td class="paramtype">std::ostream &amp;&#160;</td>
+          <td class="paramname"><em>os</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classdoor_1_1Panel.html">Panel</a> &amp;&#160;</td>
+          <td class="paramname"><em>p</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Output panel to stream. </p>
+<p>This uses the Panel.x, Panel.y to render the panel using ANSI control codes. Border style is considered, and wether or not we are using unicode. Colors of the border, and lines use their color or their renderFunction. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">os</td><td></td></tr>
+    <tr><td class="paramname">p</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>std::ostream&amp; </dd></dl>
 
 </div>
 </div>

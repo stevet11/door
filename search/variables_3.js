@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['hascolor_168',['hasColor',['../classdoor_1_1Line.html#ab9603154e50c33245f30dbc5c60bd5c8',1,'door::Line']]]
+  ['fg_203',['fg',['../classdoor_1_1ANSIColor.html#aa11de87d84c864dcb1ee26042a28e519',1,'door::ANSIColor']]],
+  ['full_5fcp437_204',['full_cp437',['../namespacedoor.html#aeade8b521c7f95755fdb166727c2b87c',1,'door']]]
 ];
