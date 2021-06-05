@@ -66,20 +66,26 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><dl class="reflist">
+<dt>Member <a class="el" href="classdoor_1_1Door.html#a18b8c731b27e23d6913c0ad683a37ce7">door::Door::cx</a>  </dt>
+<dd><a class="anchor" id="_todo000004"></a>Current cursor X position.  </dd>
+<dt>Member <a class="el" href="classdoor_1_1Door.html#ae3030f754f5c183c0739ca899f5d351c">door::Door::cy</a>  </dt>
+<dd><a class="anchor" id="_todo000005"></a>Current cursor Y position.  </dd>
 <dt>Member <a class="el" href="classdoor_1_1Door.html#a264d9e4eb0d6eb0e03f60520bcb11dd4">door::Door::overflow</a>  (int c) override</dt>
 <dd><a class="anchor" id="_todo000001"></a>Replace this also with a direct call to od_disp_emu. </dd>
+<dt>Member <a class="el" href="classdoor_1_1Door.html#abc021f4f29b9f78356641ba68df3ee4a">door::Door::track</a>  </dt>
+<dd><a class="anchor" id="_todo000003"></a>Enable tracking cursor position.  </dd>
 <dt>Member <a class="el" href="classdoor_1_1Line.html#a702464834d9546f67f1952a62e4038f2">door::Line::operator&lt;&lt;</a>  (std::ostream &amp;os, const <a class="el" href="classdoor_1_1Line.html" title="Text and ANSIColor.">Line</a> &amp;l)</dt>
-<dd><a class="anchor" id="_todo000003"></a>This might be a problem, because const <a class="el" href="classdoor_1_1Line.html" title="Text and ANSIColor.">Line</a> wouldn't allow me to track "updates". I.E. I send the line, I'd need to change the line's State to "nothing changed". Then, if something did change, the next update request would be able to know that yes, this does indeed need to be sent. </dd>
+<dd><a class="anchor" id="_todo000006"></a>This might be a problem, because const <a class="el" href="classdoor_1_1Line.html" title="Text and ANSIColor.">Line</a> wouldn't allow me to track "updates". I.E. I send the line, I'd need to change the line's State to "nothing changed". Then, if something did change, the next update request would be able to know that yes, this does indeed need to be sent. </dd>
 <dt>Member <a class="el" href="classdoor_1_1Line.html#a68f6b1bfdaab2ed72f2a13810b166049">door::Line::setUpdater</a>  (updateFunction uf)</dt>
-<dd><a class="anchor" id="_todo000005"></a>Define an updateFunction.  </dd>
+<dd><a class="anchor" id="_todo000008"></a>Define an updateFunction.  </dd>
 <dt>Member <a class="el" href="classdoor_1_1Menu.html#a06da9157cc5984510153a6b93bf2e71e">door::Menu::choose</a>  (<a class="el" href="classdoor_1_1Door.html">Door</a> &amp;door)</dt>
-<dd><a class="anchor" id="_todo000006"></a>Fix this, so it only updates the lines that have been changed when the user selects something. Also, add the "Up/Down Move" maybe to the bottom? </dd>
+<dd><a class="anchor" id="_todo000009"></a>Fix this, so it only updates the lines that have been changed when the user selects something. Also, add the "Up/Down Move" maybe to the bottom? </dd>
 <dt>Member <a class="el" href="namespacedoor.html#aae6ca4805185baa51dcc661a69fa801b">door::operator&lt;&lt;</a>  (std::ostream &amp;os, const <a class="el" href="classdoor_1_1Goto.html" title="ANSI Goto X, Y position.">Goto</a> &amp;g)</dt>
 <dd><p class="startdd"><a class="anchor" id="_todo000002"></a>Optimize the ANSI goto string output. </p>
 <p class="enddd">Update the <a class="el" href="classdoor_1_1Door.html">Door</a> object so it know where the cursor is positioned. </p>
 </dd>
 <dt>Member <a class="el" href="classdoor_1_1Panel.html#ac7db32ec19257344af24bd80536c76d5">door::Panel::lines</a>  </dt>
-<dd><a class="anchor" id="_todo000004"></a>Fix this to use shared_ptr. I don't think unique_ptr is the right way to go with this. I want to reuse things, and that means shared_ptr!</dd>
+<dd><a class="anchor" id="_todo000007"></a>Fix this to use shared_ptr. I don't think unique_ptr is the right way to go with this. I want to reuse things, and that means shared_ptr!</dd>
 </dl>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->

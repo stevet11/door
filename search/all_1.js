@@ -10,10 +10,8 @@ var searchData=
   ['borderstyle_12',['BorderStyle',['../namespacedoor.html#a08afbc9eecb6efd7d4c741023b11db91',1,'door']]],
   ['box_5fstyles_13',['box_styles',['../structdoor_1_1box__styles.html',1,'door']]],
   ['boxes_14',['BOXES',['../namespacedoor.html#a018157cf945eeb22c9a1bc4fefff84ed',1,'door']]],
-  ['bpos_15',['bpos',['../getkey_8cpp.html#aaa0e5be04b9ee83acfdd443145061f47',1,'getkey.cpp']]],
-  ['br_16',['br',['../structdoor_1_1box__styles.html#a1ac4103c69f98b408b295533afecd320',1,'door::box_styles']]],
-  ['bright_17',['BRIGHT',['../namespacedoor.html#add24f9a933f9a6e613de6d56854e5c52aca78b38b9fe41e51b331abe6999a1040',1,'door']]],
-  ['brown_18',['BROWN',['../namespacedoor.html#abafe0a9e79349883af3ab2a7fb544366a493cacf6f6a2ae4798b319b8b9ba9488',1,'door']]],
-  ['buffer_19',['buffer',['../getkey_8cpp.html#a92dfe6e9243e862063a0c3869f784557',1,'getkey.cpp']]],
-  ['bug_20list_20',['Bug List',['../bug.html',1,'']]]
+  ['br_15',['br',['../structdoor_1_1box__styles.html#a1ac4103c69f98b408b295533afecd320',1,'door::box_styles']]],
+  ['bright_16',['BRIGHT',['../namespacedoor.html#add24f9a933f9a6e613de6d56854e5c52aca78b38b9fe41e51b331abe6999a1040',1,'door']]],
+  ['brown_17',['BROWN',['../namespacedoor.html#abafe0a9e79349883af3ab2a7fb544366a493cacf6f6a2ae4798b319b8b9ba9488',1,'door']]],
+  ['bug_20list_18',['Bug List',['../bug.html',1,'']]]
 ];

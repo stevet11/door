@@ -554,7 +554,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>set updater function</p>
-<p>This can update the line text when called. </p><dl class="todo"><dt><b><a class="el" href="todo.html#_todo000005">Todo:</a></b></dt><dd>Define an updateFunction. </dd></dl>
+<p>This can update the line text when called. </p><dl class="todo"><dt><b><a class="el" href="todo.html#_todo000008">Todo:</a></b></dt><dd>Define an updateFunction. </dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">newUpdater</td><td>updateFunction </td></tr>
@@ -618,7 +618,7 @@ Friends</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000003">Todo:</a></b></dt><dd>This might be a problem, because const <a class="el" href="classdoor_1_1Line.html" title="Text and ANSIColor.">Line</a> wouldn't allow me to track "updates". I.E. I send the line, I'd need to change the line's State to "nothing changed". Then, if something did change, the next update request would be able to know that yes, this does indeed need to be sent.</dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000006">Todo:</a></b></dt><dd>This might be a problem, because const <a class="el" href="classdoor_1_1Line.html" title="Text and ANSIColor.">Line</a> wouldn't allow me to track "updates". I.E. I send the line, I'd need to change the line's State to "nothing changed". Then, if something did change, the next update request would be able to know that yes, this does indeed need to be sent.</dd></dl>
 <dl class="bug"><dt><b><a class="el" href="bug.html#_bug000001">Bug:</a></b></dt><dd>This also might cause problems if I display a shared BasicLine (in multiple places), and then update it. It would only update in the first place (the others wouldn't show it needs an update). </dd></dl>
 <p>Output <a class="el" href="classdoor_1_1Line.html" title="Text and ANSIColor.">Line</a></p>
 <p>This looks for padding and paddingColor. This uses the render function if set.</p>
