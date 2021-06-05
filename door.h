@@ -188,7 +188,6 @@ public:
  * @class Door
  *
  * This handles output to the caller, via ostream.
- *
  */
 class Door : public std::ostream, private std::streambuf {
 
@@ -223,10 +222,6 @@ private:
   std::thread time_thread;
 
 public:
-  /**
-   * @param argc int
-   * @param argv char *[]
-   */
   Door(std::string dname, int argc, char *argv[]);
   /// Default copy ctor deleted
   Door(Door &) = delete;

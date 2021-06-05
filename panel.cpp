@@ -74,8 +74,7 @@ Panel::Panel(const Panel &original) : border_color(original.border_color) {
 /**
  * @brief Set the panels X and Y screen position.
  *
- * @param xp
- * @param yp
+ * @param[in] xp,yp new screen position
  */
 void Panel::set(int xp, int yp) {
   x = xp;
@@ -352,7 +351,7 @@ void Panel::lineSetBack(ANSIColor back) {
  * @brief Create a spacer line using block drawing characters.
  *
  * Return a Line of single or double characters the width of the panel.
- * @param single
+ * @param[in] single make single or double line
  * @return std::unique_ptr<Line>
  */
 std::unique_ptr<Line> Panel::spacer_line(bool single) {

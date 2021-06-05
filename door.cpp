@@ -59,11 +59,13 @@ void to_lower(std::string &text) {
 }
 
 /**
- * @brief Replace all instances of from with to.
+ * @brief Replaces one string with another once
  *
- * @param str
- * @param from
- * @param to
+ * Returns true if replaced.
+ * 
+ * @param[in,out] str String to modify
+ * @param[in] from String to search for
+ * @param[in] to String to replace with
  * @return true
  * @return false
  */
@@ -210,10 +212,11 @@ bool full_cp437 = false;
 bool debug_capture = false;
 
 /**
- * Construct a new Door object using the commandline parameters
- * given to the main function.
- *
- * @example door-example.cpp
+ * @brief Construct a new Door:: Door object
+ * 
+ * @param[in] dname Door name used for logfile
+ * @param[in] argc 
+ * @param[in] argv 
  */
 Door::Door(std::string dname, int argc, char *argv[])
     : std::ostream(this), doorname{dname},
