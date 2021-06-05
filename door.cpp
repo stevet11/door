@@ -49,6 +49,12 @@ work-around code.
 
 namespace door {
 
+/**
+ * @brief pushback buffer for keys.
+ *
+ * This allows us to peek ahead and push back characters we're not interested
+ * it.  It also allows us to test the \ref Door::getkey function.
+ */
 std::list<char> pushback;
 
 /**
@@ -403,6 +409,24 @@ void Door::init(void) {
       std::thread(&Door::time_thread_run, this, std::move(stop_future));
 }
 
+/**
+ * @brief Detect unicode/CP437, and screen size.
+ *
+ * This sets unicode and full_cp437 flags, width and height.
+ *
+ * This works by clearing the screen and homing the cursor.  We then output some
+ * CP437 symbols and ask for the cursor position.  We send a newline, output a
+ * unicode symbol, and query cursor position.
+ *
+ * The CP437 symbols we use are specific.  They are the hearts and diamonds
+ * symbols, which are commonly mistaken for control codes.  If unicode == false
+ * and full_cp437 == true, then we do fully support CP437 on this terminal.
+ *
+ * For the screensize, we move the cursor down 999 and move cursor right 999 and
+ * query position.
+ *
+ * On failure to detect screensize, width and height are set to 0.
+ */
 void Door::detect_unicode_and_screen(void) {
   unicode = false;
   full_cp437 = false;
@@ -594,6 +618,14 @@ ofstream &Door::log(void) {
   return logf;
 }
 
+/**
+ * @brief Are there any keys in STDIN?
+ *
+ * This uses select to check if we have received any keys.  This does not use
+ * pushback.
+ * @return true
+ * @return false
+ */
 bool Door::haskey(void) {
   fd_set socket_set;
   struct timeval tv;
@@ -626,11 +658,15 @@ bool Door::haskey(void) {
   return true;
 }
 
-/*
-  low-lever read a key from terminal or stdin.
-  Returns key, or
-  -1 (no key available)
-  -2 (read error)
+/**
+ * @brief low level read key.
+ *
+ * Returns key, or
+ * -1 no key available/timeout
+ * -2 read error/hang up
+ * -3 out of time
+ *
+ * @return signed int
  */
 signed int Door::getch(void) {
   fd_set socket_set;
@@ -680,7 +716,14 @@ signed int Door::getch(void) {
   return key;
 }
 
-signed int Door::getkeyOrPushback(void) {
+/**
+ * Call low level getch if the pushback buffer is empty.
+ *
+ * This allows testing of the \ref Door::getkey function.
+ *
+ * @return signed int
+ */
+signed int Door::getkey_or_pushback(void) {
   signed int c;
   if (!door::pushback.empty()) {
     c = door::pushback.front();
@@ -690,17 +733,21 @@ signed int Door::getkeyOrPushback(void) {
   return getch();
 }
 
+/**
+ * @brief Get a key routine.
+ *
+ * This returns the key received, or XKEY_* values for function keys, etc.
+ * If return < 0:
+ * -1 timeout/no key
+ * -2 hangup
+ * -3 out of time
+ *
+ * @return signed int
+ */
 signed int Door::getkey(void) {
   signed int c, c2;
 
-  c = getkeyOrPushback();
-  /*
-  if (bpos != 0) {
-    c = get();
-  } else {
-    c = getch();
-  }
-  */
+  c = getkey_or_pushback();
 
   if (c < 0)
     return c;
@@ -711,7 +758,7 @@ signed int Door::getkey(void) {
   This strips out the null.
   */
   if (c == 0x0d) {
-    c2 = getkeyOrPushback();
+    c2 = getkey_or_pushback();
     if ((c2 != 0) and (c2 >= 0) and (c2 != 0x0a)) {
       log() << "got " << (int)c2 << " so stuffing it into unget buffer."
             << std::endl;
@@ -724,7 +771,7 @@ signed int Door::getkey(void) {
     // possibly "doorway mode"
     int tries = 0;
 
-    c2 = getkeyOrPushback();
+    c2 = getkey_or_pushback();
     while (c2 < 0) {
       if (tries > 7) {
         log() << "ok, got " << c2 << " and " << tries << " so returning 0x00!"
@@ -732,7 +779,7 @@ signed int Door::getkey(void) {
 
         return c;
       }
-      c2 = getkeyOrPushback();
+      c2 = getkey_or_pushback();
       ++tries;
     }
 
@@ -795,7 +842,7 @@ signed int Door::getkey(void) {
 
   if (c == 0x1b) {
     // possible extended key
-    c2 = getkeyOrPushback();
+    c2 = getkey_or_pushback();
     if (c2 < 0) {
       // nope, just plain ESC key
       return c;

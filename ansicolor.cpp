@@ -21,14 +21,15 @@ ANSIColor::ANSIColor()
  * Construct a new ANSIColor::ANSIColor object
  * with attribute set.
  *
- * @param a ATTR
+ * @param[in] a ATTR
  */
 ANSIColor::ANSIColor(ATTR a) : ANSIColor() { Attr(a); }
+
 /**
  * Construct a new ANSIColor::ANSIColor object
  * with a foreground color.
  *
- * @param f COLOR
+ * @param[in] f COLOR
  */
 ANSIColor::ANSIColor(COLOR f) : ANSIColor() { fg = f; }
 
@@ -36,8 +37,8 @@ ANSIColor::ANSIColor(COLOR f) : ANSIColor() { fg = f; }
  * Construct a new ANSIColor::ANSIColor object
  * with a foreground color and attribute.
  *
- * @param f COLOR
- * @param a ATTR
+ * @param[in] f COLOR
+ * @param[in] a ATTR
  */
 ANSIColor::ANSIColor(COLOR f, ATTR a) : ANSIColor() {
   fg = f;
@@ -48,9 +49,9 @@ ANSIColor::ANSIColor(COLOR f, ATTR a) : ANSIColor() {
  * Construct a new ANSIColor::ANSIColor object
  * with a foreground color and attributes.
  *
- * @param f COLOR
- * @param a1 ATTR
- * @param a2 ATTR
+ * @param[in] f COLOR
+ * @param[in] a1 ATTR
+ * @param[in] a2 ATTR
  */
 ANSIColor::ANSIColor(COLOR f, ATTR a1, ATTR a2) : ANSIColor() {
   fg = f;
@@ -62,8 +63,8 @@ ANSIColor::ANSIColor(COLOR f, ATTR a1, ATTR a2) : ANSIColor() {
  * Construct a new ANSIColor::ANSIColor object
  * with a foreground and background color.
  *
- * @param f COLOR
- * @param b COLOR
+ * @param[in] f foreground COLOR
+ * @param[in] b background COLOR
  */
 ANSIColor::ANSIColor(COLOR f, COLOR b) : ANSIColor() {
   fg = f;
@@ -75,9 +76,9 @@ ANSIColor::ANSIColor(COLOR f, COLOR b) : ANSIColor() {
  * with a foreground color, background color,
  * and attribute.
  *
- * @param f COLOR
- * @param b COLOR
- * @param a ATTR
+ * @param[in] f foreground COLOR
+ * @param[in] b background COLOR
+ * @param[in] a ATTR
  */
 ANSIColor::ANSIColor(COLOR f, COLOR b, ATTR a) : ANSIColor() {
   fg = f;
@@ -89,10 +90,10 @@ ANSIColor::ANSIColor(COLOR f, COLOR b, ATTR a) : ANSIColor() {
  * Construct a new ANSIColor::ANSIColor object
  * with foreground, background color and attributes.
  *
- * @param f COLOR
- * @param b COLOR
- * @param a1 ATTR
- * @param a2 ATTR
+ * @param[in] f foreground COLOR
+ * @param[in] b background COLOR
+ * @param[in] a1 ATTR
+ * @param[in] a2 ATTR
  */
 ANSIColor::ANSIColor(COLOR f, COLOR b, ATTR a1, ATTR a2) : ANSIColor() {
   fg = f;
@@ -105,7 +106,7 @@ ANSIColor::ANSIColor(COLOR f, COLOR b, ATTR a1, ATTR a2) : ANSIColor() {
  * Set attribute.  We return the object so
  * calls can be chained.
  *
- * @param a ATTR
+ * @param[in] a ATTR
  * @return ANSIColor&
  */
 ANSIColor &ANSIColor::Attr(ATTR a) {
@@ -131,7 +132,7 @@ ANSIColor &ANSIColor::Attr(ATTR a) {
  *
  * This compares colors and attributes, but ignores reset.
  *
- * @param c const ANSIColor &
+ * @param[in] c const ANSIColor &
  * @return bool
  */
 bool ANSIColor::operator==(const ANSIColor &c) const {
@@ -144,7 +145,7 @@ bool ANSIColor::operator==(const ANSIColor &c) const {
  *
  * This compares colors and attributes, but ignores reset.
  *
- * @param c const ANSIColor &
+ * @param[in] c const ANSIColor &
  * @return bool
  */
 bool ANSIColor::operator!=(const ANSIColor &c) const {
@@ -152,6 +153,11 @@ bool ANSIColor::operator!=(const ANSIColor &c) const {
            (blink == c.blink) and (inverse == c.inverse));
 }
 
+/**
+ * @brief Set foreground color
+ *
+ * @param[in] f foreground COLOR
+ */
 void ANSIColor::setFg(COLOR f) {
   fg = f;
   reset = 0;
@@ -159,11 +165,32 @@ void ANSIColor::setFg(COLOR f) {
   blink = 0;
   inverse = 0;
 }
+
+/**
+ * @brief Set foreground color and attribute
+ *
+ * @param[in] f foreground COLOR
+ * @param[in] a ATTR
+ */
 void ANSIColor::setFg(COLOR f, ATTR a) {
   fg = f;
   attr(a);
 }
+
+/**
+ * @brief Set background color
+ *
+ * @param[in] b background COLOR
+ */
 void ANSIColor::setBg(COLOR b) { bg = b; }
+
+/**
+ * @brief Set attribute
+ *
+ * This clears all the attributes before setting the selected ATTR.
+ *
+ * @param[in] a ATTR
+ */
 void ANSIColor::attr(ATTR a) {
   // first, clear all attributes
   reset = 0;
@@ -214,6 +241,11 @@ std::string ANSIColor::output(void) const {
   return clr;
 }
 
+/**
+ * @brief Output debug string for ANSIColor
+ *
+ * @return std::string
+ */
 std::string ANSIColor::debug(void) {
   std::string output;
   output = "ANSIColor FG";

@@ -8,10 +8,10 @@
 #include <functional>
 #include <future>
 #include <iostream>
+#include <list>
 #include <memory>
 #include <ostream>
 #include <vector>
-#include <list>
 
 // raw mode
 #include <termios.h>
@@ -131,22 +131,21 @@ enum class ATTR : std::int8_t {
  *
  */
 class ANSIColor {
-  /// Foreground color
+  /** Foreground color */
   COLOR fg;
-  /// Background color
+  /** Background color */
   COLOR bg;
   // Track attributes (ATTR)
-  /// reset flag / always send color and attributes
+  /** reset flag / always send color and attributes */
   unsigned int reset : 1;
-  /// bold / bright flag
+  /** bold / bright flag */
   unsigned int bold : 1;
-  /// blink slow blinking text
+  /** blink slow blinking text */
   unsigned int blink : 1;
-  /// inverse
+  /** inverse */
   unsigned int inverse : 1;
 
 public:
-  // default initialization here
   ANSIColor();
   ANSIColor(ATTR a);
   ANSIColor(COLOR f);
@@ -161,28 +160,21 @@ public:
   void setFg(COLOR f);
   void setFg(COLOR f, ATTR a);
   void setBg(COLOR b);
+  /**
+   * Get the foreground color
+   * @return COLOR
+   */
   COLOR getFg() { return fg; };
+  /**
+   * Get the background color
+   * @return COLOR
+   */
   COLOR getBg() { return bg; };
   void attr(ATTR a);
 
-  /**
-   * @return std::string
-   */
   std::string output(void) const;
-
   std::string debug(void);
-
-  /**
-   * @param previous the previous attributes and colors
-   * @return std::string
-   */
   std::string output(ANSIColor &previous) const;
-
-  /**
-   * @param os Output stream
-   * @param c ANSIColor
-   * @return std::ostream&
-   */
   friend std::ostream &operator<<(std::ostream &os, const ANSIColor &c);
 };
 
@@ -196,61 +188,81 @@ class Door : public std::ostream, private std::streambuf {
 private:
   std::streamsize xsputn(const char *s, std::streamsize n) override;
   int overflow(int c) override;
+  /** The name used for logfile */
   std::string doorname;
   void parse_dropfile(const char *filepath);
   void init(void);
   std::time_t startup;
+  /** Initial terminal defaults. */
   struct termios tio_default;
-  // getkey functions
   signed int getch(void);
-  // void unget(char c);
-  signed int getkeyOrPushback(void);
-  // char get(void);
+  signed int getkey_or_pushback(void);
+  /** Did we read a dropfile? */
   bool has_dropfile;
   bool debugging;
+  /** Name of the dropfile. */
   std::string dropfilename;
+  /** Contents of the dropfile. */
   vector<std::string> dropfilelines;
+  /** Logfile */
   ofstream logf;
   void detect_unicode_and_screen(void);
-
-  // time thread - time left
+  /** Allow us to stop the time_thread. */
   std::promise<void> stop_thread;
-  // std::future<void> stop_future;
 
-  // atomic seconds_elapsed ?
+  /** Used by time_thread to know when a minute has passed. */
   int seconds_elapsed;
   void time_thread_run(std::future<void> future);
+  /** Thread used to update time_left and time_used. */
   std::thread time_thread;
 
 public:
   Door(std::string dname, int argc, char *argv[]);
-  /// Default copy ctor deleted
   Door(Door &) = delete;
   virtual ~Door();
   ofstream &log(void);
-  // void log(std::string output);
+  /** Commandline options parser. */
   AnyOption opt;
+  /** Buffer that holds the output for testing. */
   std::string debug_buffer;
 
   /**
    * Previous ANSI-BBS colors and attributes sent.
-   * This is used to optimize our output.
+   * This is used to optimize ANSI Color output.
    * \see ANSIColor::output()
    */
   ANSIColor previous;
+  /** \todo Enable tracking cursor position. */
   bool track;
+  /** \todo Current cursor X position. */
   int cx;
+  /** \todo Current cursor Y position. */
   int cy;
+  /** Detected screen width. \ref Door::detect_unicode_and_screen */
   int width;
+  /** Detected screen height. */
   int height;
+  /**
+   * @brief Number of seconds before timing out.
+   *
+   * When prompting for user input, this is the number of seconds they have to
+   * respond before we give up and timeout on them.  (Default 120/2 minutes)
+   */
   int inactivity;
+  /** BBS Dropfile username */
   std::string username;
+  /** BBS Dropfile handle */
   std::string handle;
+  /** BBS Dropfile location */
   std::string location;
+  /** BBS Dropfile sysop name */
   std::string sysop;
   // std::string bbsname;
+  /** BBS Dropfile node number */
   int node;
+  /** time left in minutes */
   atomic<int> time_left;
+  /** time used in minutes */
   atomic<int> time_used;
 
   signed int getkey(void);
