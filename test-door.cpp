@@ -131,6 +131,24 @@ TEST_F(DoorTest, GotoOutput) {
   d->debug_buffer.clear();
 }
 
+TEST_F(DoorTest, GetKeyEnterNull) {
+  EXPECT_TRUE(door::pushback.empty());
+  door::pushback.push_back('?');
+  EXPECT_FALSE(door::pushback.empty());
+  int c = d->getkey();
+  EXPECT_EQ('?', c);
+  EXPECT_TRUE(door::pushback.empty());
+
+  door::pushback.push_back(0x0d);
+  door::pushback.push_back(0);
+  door::pushback.push_back('!');
+  d->inactivity = 1;
+  EXPECT_EQ(0x0d, d->getkey());
+  EXPECT_EQ('!', d->getkey());
+  EXPECT_TRUE(door::pushback.empty());
+  EXPECT_EQ(-1, d->getkey());
+}
+
 TEST_F(DoorTest, LineOutput) {
   door::Line line("Meow");
   *d << line;

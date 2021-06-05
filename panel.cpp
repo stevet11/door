@@ -915,11 +915,11 @@ void Screen::update(void) {
 /**
  * @brief Outputs screen to stream.
  * 
- * This iterates over the panels, and renders them.
+ * This iterates over panels, and outputs them.
  * See \ref door::Panel
  * 
- * @param os 
- * @param s 
+ * @param[in,out] os Stream
+ * @param[in] s Screen to send
  * @return std::ostream& 
  */
 std::ostream &operator<<(std::ostream &os, const Screen &s) {

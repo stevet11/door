@@ -49,6 +49,8 @@ work-around code.
 
 namespace door {
 
+std::list<char> pushback;
+
 /**
  * @brief convert string to lowercase
  *
@@ -62,7 +64,7 @@ void to_lower(std::string &text) {
  * @brief Replaces one string with another once
  *
  * Returns true if replaced.
- * 
+ *
  * @param[in,out] str String to modify
  * @param[in] from String to search for
  * @param[in] to String to replace with
@@ -129,22 +131,22 @@ public:
 
 /**
  * @brief Construct a new IConv::IConv object
- * 
+ *
  * Give the encodings that you want to convert to and from.
- * @param to 
- * @param from 
+ * @param to
+ * @param from
  */
 IConv::IConv(const char *to, const char *from) : ic(iconv_open(to, from)) {}
 IConv::~IConv() { iconv_close(ic); }
 
 /**
  * @brief Calls iconv API to do the conversion.
- * 
+ *
  * Buffers must be provided.
- * @param input 
- * @param output 
- * @param outbufsize 
- * @return int 
+ * @param input
+ * @param output
+ * @param outbufsize
+ * @return int
  */
 int IConv::convert(char *input, char *output, size_t outbufsize) {
   size_t inbufsize = strlen(input);
@@ -205,18 +207,18 @@ bool unicode = false;
  */
 bool full_cp437 = false;
 /**
- * @brief Capture the output for debugging.  
- * 
+ * @brief Capture the output for debugging.
+ *
  * This is used by the tests.
  */
 bool debug_capture = false;
 
 /**
  * @brief Construct a new Door:: Door object
- * 
+ *
  * @param[in] dname Door name used for logfile
- * @param[in] argc 
- * @param[in] argv 
+ * @param[in] argc
+ * @param[in] argv
  */
 Door::Door(std::string dname, int argc, char *argv[])
     : std::ostream(this), doorname{dname},
@@ -389,7 +391,6 @@ void Door::init(void) {
   tio_raw.c_cc[VMIN] = 0;
   tio_raw.c_cc[VTIME] = 1;
 
-  bpos = 0;
   tcsetattr(STDIN_FILENO, TCSANOW, &tio_raw);
 
   startup = std::time(nullptr);
@@ -679,28 +680,27 @@ signed int Door::getch(void) {
   return key;
 }
 
-void Door::unget(char c) {
-  if (bpos < sizeof(buffer) - 1) {
-    buffer[bpos] = c;
-    bpos++;
+signed int Door::getkeyOrPushback(void) {
+  signed int c;
+  if (!door::pushback.empty()) {
+    c = door::pushback.front();
+    door::pushback.pop_front();
+    return c;
   }
-}
-
-char Door::get(void) {
-  if (bpos == 0)
-    return 0;
-  bpos--;
-  return buffer[bpos];
+  return getch();
 }
 
 signed int Door::getkey(void) {
   signed int c, c2;
 
+  c = getkeyOrPushback();
+  /*
   if (bpos != 0) {
     c = get();
   } else {
     c = getch();
   }
+  */
 
   if (c < 0)
     return c;
@@ -711,11 +711,11 @@ signed int Door::getkey(void) {
   This strips out the null.
   */
   if (c == 0x0d) {
-    c2 = getch();
+    c2 = getkeyOrPushback();
     if ((c2 != 0) and (c2 >= 0) and (c2 != 0x0a)) {
       log() << "got " << (int)c2 << " so stuffing it into unget buffer."
             << std::endl;
-      unget(c2);
+      door::pushback.push_front(c2);
     }
     return c;
   }
@@ -724,7 +724,7 @@ signed int Door::getkey(void) {
     // possibly "doorway mode"
     int tries = 0;
 
-    c2 = getch();
+    c2 = getkeyOrPushback();
     while (c2 < 0) {
       if (tries > 7) {
         log() << "ok, got " << c2 << " and " << tries << " so returning 0x00!"
@@ -732,7 +732,7 @@ signed int Door::getkey(void) {
 
         return c;
       }
-      c2 = getch();
+      c2 = getkeyOrPushback();
       ++tries;
     }
 
@@ -795,7 +795,7 @@ signed int Door::getkey(void) {
 
   if (c == 0x1b) {
     // possible extended key
-    c2 = getch();
+    c2 = getkeyOrPushback();
     if (c2 < 0) {
       // nope, just plain ESC key
       return c;
@@ -811,7 +811,7 @@ signed int Door::getkey(void) {
       // special case here where I'm sending out cursor location requests
       // and the \x1b[X;YR strings are getting buffered.
       if (c2 == 0x1b) {
-        unget(c2);
+        door::pushback.push_front(c2);
         break;
       }
       extended[pos] = (char)c2;
@@ -907,14 +907,6 @@ signed int Door::getkey(void) {
 
     return XKEY_UNKNOWN;
   }
-  return c;
-}
-
-int Door::get_input(void) {
-  signed int c;
-  c = getkey();
-  if (c < 0)
-    return 0;
   return c;
 }
 

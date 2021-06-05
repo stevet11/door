@@ -11,6 +11,7 @@
 #include <memory>
 #include <ostream>
 #include <vector>
+#include <list>
 
 // raw mode
 #include <termios.h>
@@ -58,6 +59,7 @@ namespace door {
 extern bool unicode;
 extern bool full_cp437;
 extern bool debug_capture;
+extern std::list<char> pushback;
 
 /*
 Translate CP437 strings to unicode for output.
@@ -201,10 +203,9 @@ private:
   struct termios tio_default;
   // getkey functions
   signed int getch(void);
-  void unget(char c);
-  char get(void);
-  char buffer[5];
-  unsigned int bpos;
+  // void unget(char c);
+  signed int getkeyOrPushback(void);
+  // char get(void);
   bool has_dropfile;
   bool debugging;
   std::string dropfilename;
@@ -254,7 +255,6 @@ public:
 
   signed int getkey(void);
   bool haskey(void);
-  int get_input(void);
   signed int sleep_key(int secs);
   std::string input_string(int max);
   int get_one_of(const char *keys);
