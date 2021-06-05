@@ -709,6 +709,9 @@ public:
 class Screen {
 private:
   // bool hidden;
+  /**
+   * @brief vector of panels.
+   */
   std::vector<std::unique_ptr<Panel>> panels;
 
 public:

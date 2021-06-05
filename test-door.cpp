@@ -141,7 +141,8 @@ TEST_F(DoorTest, LineOutput) {
   door::Line color("Cat", 4,
                    door::ANSIColor(door::COLOR::BLACK, door::COLOR::WHITE));
   *d << color;
-  EXPECT_STREQ(d->debug_buffer.c_str(), "\x1b[30;47mCat ");
+  EXPECT_STREQ(d->debug_buffer.c_str(), "\x1b[30;47mCat");
+  // EXPECT_STREQ(d->debug_buffer.c_str(), "\x1b[30;47mCat ");
 
   *d << door::reset;
   d->debug_buffer.clear();

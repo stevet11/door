@@ -141,6 +141,13 @@ struct box_styles {
  * This holds the characters needed to render the different box styles.
  * tl tr top side bl br ml mr
  */
+
+/**
+ * @brief Unicode box characters
+ *
+ * top-left, top-right, top, side, bottom-left, bottom-right, middle-left,
+ * middle-right See \ref BorderStyle for the order the boxes are in.
+ */
 struct box_styles UBOXES[] = {{"\u250c", "\u2510", "\u2500", "\u2502", "\u2514",
                                "\u2518", "\u251c", "\u2524"},
                               {"\u2554", "\u2557", "\u2550", "\u2551", "\u255a",
@@ -150,6 +157,12 @@ struct box_styles UBOXES[] = {{"\u250c", "\u2510", "\u2500", "\u2502", "\u2514",
                               {"\u2552", "\u2555", "\u2550", "\u2502", "\u2558",
                                "\u255b", "\u255e", "\u2561"}};
 
+/**
+ * @brief CP437 box characters
+ *
+ * top-left, top-right, top, side, bottom-left, bottom-right, middle-left,
+ * middle-right See \ref BorderStyle for the order the boxes are in.
+ */
 struct box_styles BOXES[] = {
     /*
             # ┌──┐
@@ -217,6 +230,14 @@ struct box_styles BOXES[] = {
     },
 };
 
+// These already exists in the above structures.  Whoops.
+
+/**
+ * @brief CP437 box line joining data
+ *
+ * SINGLE 0, DOUBLE 1
+ * Join Border to Line, 0 is Left, 1 is Right.
+ */
 const char *JOIN[2][2][2] = {{
                                  {"\xc3", "\xb4"}, // SS 00
                                  {"\xc6", "\xb5"}  // SD 01
@@ -226,6 +247,11 @@ const char *JOIN[2][2][2] = {{
                                  {"\xcc", "\xb9"}, // DD 11
                              }};
 
+/**
+ * @brief Unicode box line joining data
+ * SINGLE 0, DOUBLE 1
+ * Join Border to Line, 0 is Left, 1 is Right.
+ */
 const char *UJOIN[2][2][2] = {{
                                   {"\u251c", "\u2524"}, // SS ├ ┤
                                   {"\u255e", "\u2561"}  // SD ╞ ╡
@@ -352,6 +378,16 @@ std::unique_ptr<Line> Panel::spacer_line(bool single) {
 // operator<< Panel is called to output the Menu.
 // Menu has been massively changed to use Render instead of Colorizer.
 
+/**
+ * @brief Output panel to stream
+ *
+ * This uses the Panel.x, Panel.y to render the panel using ANSI control codes.
+ * Border style is considered, and wether or not we are using unicode.
+ * Colors of the border, and lines use their color or their renderFunction.
+ * @param os
+ * @param p
+ * @return std::ostream&
+ */
 std::ostream &operator<<(std::ostream &os, const Panel &p) {
   if (p.hidden)
     return os;
@@ -561,6 +597,13 @@ Menu::Menu(int x, int y, int width) : Panel(x, y, width) {
   chosen = 0;
 }
 
+/**
+ * @brief Construct a new Menu:: Menu object
+ *
+ * This creates a panel with a default width.
+ * The location needs to be changed \ref Panel::set
+ * @param width
+ */
 Menu::Menu(int width) : Panel(width) {
   setStyle(BorderStyle::DOUBLE);
   setRender(true, defaultSelectedRender);
@@ -870,6 +913,16 @@ void Screen::update(void) {
   }
 }
 
+/**
+ * @brief Outputs screen to stream.
+ * 
+ * This iterates over the panels, and renders them.
+ * See \ref door::Panel
+ * 
+ * @param os 
+ * @param s 
+ * @return std::ostream& 
+ */
 std::ostream &operator<<(std::ostream &os, const Screen &s) {
   // if (!s.hidden) {
   for (auto &panel : s.panels) {

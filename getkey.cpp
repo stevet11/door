@@ -15,27 +15,32 @@
  * @brief Key and door input routines
  */
 
+/*
 void done(int signal) {
   std::cout << "\r\nWORP WORP\r\n";
   std::cout.flush();
 }
+*/
 
 #include <ctype.h>
 
+/**
+ * @brief Original terminal termios defaults.
+ */
 struct termios tio_default;
 
+/**
+ * @brief Enable terminal raw mode.
+ *
+ * This sets up the linux console so the door library will work correctly in
+ * local mode.
+ */
 void raw(void) {
   // enable terminal RAW mode
   struct termios tio_raw;
   tcgetattr(STDIN_FILENO, &tio_default);
   tio_raw = tio_default;
   cfmakeraw(&tio_raw);
-  /*
-  This works in the console, but fails with a terminal.
-  Ok, I am getting (what I would expect), but we're never timing out
-  now.  (So it has to fill up the buffer before exiting...)
-  CRAP!
-  */
 
   // Ok!  I need the extra sauce here
 
@@ -47,13 +52,29 @@ void raw(void) {
   tcsetattr(STDIN_FILENO, TCSANOW, &tio_raw);
 }
 
+/**
+ * @brief Reset the terminal termios to the original values.
+ */
 void reset(void) { tcsetattr(STDIN_FILENO, TCOFLUSH, &tio_default); }
 
+/**
+ * @brief used by output routines.
+ *
+ * Sending "\n" isn't enough.
+ */
 #define CRNL "\r\n"
 
 /*
 NOTE:  cr (from syncterm), gives 0x0d 0x00
+ */
 
+/**
+ * @brief low level getch key read
+ *
+ * This reads a key with a defined timeout value.
+ * This is called by other routines to handle arrow keys, F-keys.
+ * returns -1 on timeout (no key), -2 on error (connection closed)
+ * @return signed int
  */
 signed int getch(void) {
   fd_set socket_set;
@@ -89,9 +110,22 @@ signed int getch(void) {
   return key;
 }
 
+/**
+ * @brief pushback buffer to store keys we're not ready for yet.
+ */
 char buffer[10];
+/**
+ * @brief pushback buffer position 
+ */
 int bpos = 0;
 
+/**
+ * @brief ungets (pushes key back)
+ *
+ * If we read ahead, and we can't use it, we push it back into the buffer for
+ * next time.
+ * @param c
+ */
 void unget(char c) {
   if (bpos < sizeof(buffer) - 1) {
     buffer[bpos] = c;
@@ -99,6 +133,11 @@ void unget(char c) {
   }
 }
 
+/**
+ * @brief get a key from the pushback buffer.
+ * 
+ * @return char 
+ */
 char get(void) {
   if (bpos == 0) {
     return 0;
@@ -108,9 +147,19 @@ char get(void) {
   return c;
 }
 
+/**
+ * @brief high level getkey
+ * 
+ * This returns function keys, arrow keys, see XKEY_* defines.
+ * returns -1 (no key avaiable) or -2 (hangup)
+ * or XKEY_UNKNOWN (don't know what it is)
+ * 
+ * @return signed int 
+ */
 signed int getkey(void) {
   signed int c, c2;
 
+  // consume pushback buffer before reading more keys.
   if (bpos != 0) {
     c = get();
   } else {
@@ -158,7 +207,7 @@ signed int getkey(void) {
     }
 
     // FUTURE:  Display debug when we fail to identify the key
-#ifdef DEBUGGS
+#ifdef DEBUG_OUTPUT
     std::cout << CRNL "DEBUG:" CRNL "ESC + ";
     for (int x = 0; x < pos; x++) {
       char z = extended[x];

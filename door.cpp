@@ -49,10 +49,24 @@ work-around code.
 
 namespace door {
 
+/**
+ * @brief convert string to lowercase
+ *
+ * @param text
+ */
 void to_lower(std::string &text) {
   transform(text.begin(), text.end(), text.begin(), ::tolower);
 }
 
+/**
+ * @brief Replace all instances of from with to.
+ *
+ * @param str
+ * @param from
+ * @param to
+ * @return true
+ * @return false
+ */
 bool replace(std::string &str, const std::string &from, const std::string &to) {
   size_t start_pos = str.find(from);
   if (start_pos == std::string::npos)
@@ -61,6 +75,15 @@ bool replace(std::string &str, const std::string &from, const std::string &to) {
   return true;
 }
 
+/**
+ * @brief Replace all instances of from with to.
+ *
+ * @param str
+ * @param from
+ * @param to
+ * @return true
+ * @return false
+ */
 bool replace(std::string &str, const char *from, const char *to) {
   size_t start_pos = str.find(from);
   if (start_pos == std::string::npos)
@@ -71,6 +94,11 @@ bool replace(std::string &str, const char *from, const char *to) {
 
 static bool hangup = false;
 
+/**
+ * @brief Signal handler for detecting hangup/broken pipe
+ *
+ * @param signal
+ */
 void sig_handler(int signal) {
   hangup = true;
   /*
@@ -83,6 +111,10 @@ void sig_handler(int signal) {
   // 13 SIGPIPE -- ok, what do I do with this, eh?
 }
 
+/**
+ * @brief Converts from one encoding to another.
+ * Uses iconv (international conversion) API.
+ */
 class IConv {
   iconv_t ic;
 
@@ -93,9 +125,25 @@ public:
   int convert(char *input, char *output, size_t outbufsize);
 };
 
+/**
+ * @brief Construct a new IConv::IConv object
+ * 
+ * Give the encodings that you want to convert to and from.
+ * @param to 
+ * @param from 
+ */
 IConv::IConv(const char *to, const char *from) : ic(iconv_open(to, from)) {}
 IConv::~IConv() { iconv_close(ic); }
 
+/**
+ * @brief Calls iconv API to do the conversion.
+ * 
+ * Buffers must be provided.
+ * @param input 
+ * @param output 
+ * @param outbufsize 
+ * @return int 
+ */
 int IConv::convert(char *input, char *output, size_t outbufsize) {
   size_t inbufsize = strlen(input);
   // size_t orig_size = outbufsize;
@@ -106,8 +154,18 @@ int IConv::convert(char *input, char *output, size_t outbufsize) {
   return r;
 }
 
+/**
+ * @brief converter that we provide to convert from CP437 to UTF-8.
+ * \re cp437toUnicode
+ */
 static IConv converter("UTF-8", "CP437");
 
+/**
+ * @brief Convert from CP437 to unicode.
+ *
+ * @param input
+ * @param out
+ */
 void cp437toUnicode(std::string input, std::string &out) {
   char buffer[10240];
   char output[16384];
@@ -117,6 +175,12 @@ void cp437toUnicode(std::string input, std::string &out) {
   out.assign(output);
 }
 
+/**
+ * @brief Convert from CP437 to unicode.
+ *
+ * @param input
+ * @param out
+ */
 void cp437toUnicode(const char *input, std::string &out) {
   char buffer[10240];
   char output[16384];
@@ -126,8 +190,23 @@ void cp437toUnicode(const char *input, std::string &out) {
   out.assign(output);
 }
 
+/**
+ * @brief Was unicode detected?
+ */
 bool unicode = false;
+/**
+ * @brief Was full CP437 detected?
+ *
+ * This is for full CP437 support, meaning it also supports hearts, diamonds,
+ * spades, clubs char(3)..char(6).  These are sometimes ignored by CP437
+ * translation programs as control codes.
+ */
 bool full_cp437 = false;
+/**
+ * @brief Capture the output for debugging.  
+ * 
+ * This is used by the tests.
+ */
 bool debug_capture = false;
 
 /**
@@ -1218,7 +1297,13 @@ std::ostream &operator<<(std::ostream &os, const Goto &g) {
   return os;
 }
 
+/**
+ * @brief ANSI Save Cursor position command.
+ */
 const char SaveCursor[] = "\x1b[s";
+/**
+ * @brief ANSI Restore Cursor position command.
+ */
 const char RestoreCursor[] = "\x1b[u";
 
 // EXAMPLES
