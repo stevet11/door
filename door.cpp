@@ -15,12 +15,14 @@
 
 // alarm signal
 #include <signal.h>
-#include <unistd.h>
+#include <unistd.h> //
 
 #include <iconv.h>
 
 #include <algorithm>
 #include <iostream>
+
+#include <pwd.h> // getpwuid
 
 /**
  * @file
@@ -318,10 +320,34 @@ Door::Door(std::string dname, int argc, char *argv[])
 
   if (opt.getFlag("local")) {
     if (username.empty()) {
-      std::cout << "Local mode requires username to be set." << std::endl;
-      opt.printUsage();
-      exit(1);
+      uid_t uid = geteuid();
+      struct passwd *pw;
+      pw = getpwuid(uid);
+      if (pw) {
+        // Do we have realname as well?
+        std::string name = pw->pw_gecos;
+        size_t pos = name.find(',');
+        username = pw->pw_name;
+        if (pos != std::string::npos) {
+          name = name.substr(0, pos);
+          if (!name.empty()) {
+            username = name;
+            handle = pw->pw_name;
+          }
+        }
+        logf << "username: " << username << " handle: " << handle << std::endl;
+      } else {
+
+        std::cout << "Local mode requires username to be set." << std::endl;
+        opt.printUsage();
+        exit(1);
+      };
     }
+
+    // local mode, make sure we have a handle -- even if it's the same as
+    // username.
+    if (handle.empty())
+      handle = username;
   } else {
     // we must have a dropfile, or else!
     if (!has_dropfile) {
@@ -539,6 +565,13 @@ void Door::detect_unicode_and_screen(void) {
   }
 }
 
+/**
+ * @brief Load dropfile into dropfilelines and parse.
+ *
+ * Load dropfile and parse door.sys and door32.sys.
+ *
+ * @param[in] filepath Dropfile path and filename
+ */
 void Door::parse_dropfile(const char *filepath) {
   if (filepath == nullptr)
     return;
