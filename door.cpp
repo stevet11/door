@@ -656,6 +656,9 @@ ofstream &Door::log(void) {
  *
  * This uses select to check if we have received any keys.  This does not use
  * pushback.
+ *
+ * If HANGUP, OUTOFTIME, return true
+ *
  * @return true
  * @return false
  */
@@ -665,10 +668,10 @@ bool Door::haskey(void) {
   int select_ret = -1;
 
   if (hangup)
-    return -2;
+    return true; // HANGUP;
 
   if (time_left < 2)
-    return -3;
+    return true; // OUTOFTIME;
 
   while (select_ret == -1) {
     FD_ZERO(&socket_set);
@@ -683,7 +686,7 @@ bool Door::haskey(void) {
         continue;
       log() << "hangup detected" << std::endl;
       hangup = true;
-      return (-2);
+      return true; // HANGUP;
     }
     if (select_ret == 0)
       return false;
@@ -709,10 +712,10 @@ signed int Door::getch(void) {
   char key;
 
   if (door::hangup)
-    return -2;
+    return HANGUP;
 
   if (time_left < 2)
-    return -3;
+    return OUTOFTIME;
 
   while (select_ret == -1) {
     FD_ZERO(&socket_set);
@@ -731,10 +734,10 @@ signed int Door::getch(void) {
         continue;
       log() << "hangup detected" << std::endl;
       door::hangup = true;
-      return (-2);
+      return HANGUP;
     }
     if (select_ret == 0)
-      return (-1);
+      return TIMEOUT;
   }
 
   recv_ret = read(STDIN_FILENO, &key, 1);
@@ -742,7 +745,7 @@ signed int Door::getch(void) {
     // possibly log this.
     log() << "hangup" << std::endl;
     hangup = true;
-    return -2;
+    return HANGUP;
   }
   // debug weird keys/layouts.
   // log() << "read " << std::hex << (int)key << std::endl;
@@ -1024,10 +1027,10 @@ signed int Door::sleep_key(int secs) {
   char key;
   */
   if (hangup)
-    return -2;
+    return HANGUP;
 
   if (time_left < 2)
-    return -3;
+    return OUTOFTIME;
 
   while (select_ret == -1) {
     FD_ZERO(&socket_set);
@@ -1043,10 +1046,56 @@ signed int Door::sleep_key(int secs) {
         continue;
       hangup = true;
       log() << "hangup detected" << std::endl;
-      return (-2);
+      return HANGUP;
     }
     if (select_ret == 0)
-      return (-1);
+      return TIMEOUT;
+  }
+  return getkey();
+}
+
+/**
+ * @brief Waits miliseconds for a keypress.
+ *
+ * returns key, or -1 on timeout (seconds passed).
+ * -2 hangup
+ * -3 out of time
+ *
+ * @param msecs
+ * @return signed int
+ */
+signed int Door::sleep_ms_key(int msecs) {
+  fd_set socket_set;
+  struct timeval tv;
+  int select_ret = -1;
+  /*
+  int recv_ret;
+  char key;
+  */
+  if (hangup)
+    return HANGUP;
+
+  if (time_left < 2)
+    return OUTOFTIME;
+
+  while (select_ret == -1) {
+    FD_ZERO(&socket_set);
+    FD_SET(STDIN_FILENO, &socket_set);
+
+    tv.tv_sec = 0;
+    tv.tv_usec = msecs * 1000;
+
+    select_ret = select(STDIN_FILENO + 1, &socket_set, NULL, NULL, &tv);
+    // select(STDIN_FILENO + 1, &socket_set, NULL, NULL, bWait ? NULL : &tv);
+    if (select_ret == -1) {
+      if (errno == EINTR)
+        continue;
+      hangup = true;
+      log() << "hangup detected" << std::endl;
+      return HANGUP;
+    }
+    if (select_ret == 0)
+      return TIMEOUT;
   }
   return getkey();
 }

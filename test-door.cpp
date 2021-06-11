@@ -146,7 +146,7 @@ TEST_F(DoorTest, GetKeyEnterNull) {
   EXPECT_EQ(0x0d, d->getkey());
   EXPECT_EQ('!', d->getkey());
   EXPECT_TRUE(door::pushback.empty());
-  EXPECT_EQ(-1, d->getkey());
+  EXPECT_EQ(TIMEOUT, d->getkey());
 }
 
 TEST_F(DoorTest, LineOutput) {

@@ -49,6 +49,10 @@
 
 #define XKEY_UNKNOWN 0x1111
 
+#define TIMEOUT -1
+#define HANGUP -2
+#define OUTOFTIME -3
+
 /**
  * @brief The BBS door project.
  * This is an attempt at writing a C++ BBS door toolkit.
@@ -268,6 +272,7 @@ public:
   signed int getkey(void);
   bool haskey(void);
   signed int sleep_key(int secs);
+  signed int sleep_ms_key(int msecs);
   std::string input_string(int max);
   int get_one_of(const char *keys);
 };
