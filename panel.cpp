@@ -762,6 +762,7 @@ int Menu::choose(Door &door) {
   bool update_and_exit = false;
   std::set<int> changed;
 
+  door::ANSIColor blank(door::COLOR::BLACK); // , door::COLOR::BLACK);
   while (true) {
     if (updated) {
       for (unsigned int x = 0; x < lines.size(); ++x) {
@@ -775,7 +776,7 @@ int Menu::choose(Door &door) {
       }
       // this outputs the entire menu
       if (changed.empty())
-        door << *this;
+        door << *this << blank;
       else {
         // update just the lines that have changed.
         for (auto si : changed) {
@@ -785,7 +786,7 @@ int Menu::choose(Door &door) {
         // Cursor is positioned at the end of the panel/menu.
         // The cursor changes colors as you arrow up or down.
         // Interesting!
-        door << gotoEnd();
+        door << gotoEnd() << blank;
       }
       // door << flush;
       // door.update();
@@ -914,13 +915,13 @@ void Screen::update(void) {
 
 /**
  * @brief Outputs screen to stream.
- * 
+ *
  * This iterates over panels, and outputs them.
  * See \ref door::Panel
- * 
+ *
  * @param[in,out] os Stream
  * @param[in] s Screen to send
- * @return std::ostream& 
+ * @return std::ostream&
  */
 std::ostream &operator<<(std::ostream &os, const Screen &s) {
   // if (!s.hidden) {
