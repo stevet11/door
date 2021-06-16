@@ -317,10 +317,12 @@ Instead, return an iterator/generator.
  *
  */
 class Render {
+  /// Complete text to be rendered.
+  std::string text;
+
 public:
   Render(const std::string txt);
-  /// Complete text to be rendered.
-  const std::string text;
+
   /// Vector of ColorOutput object.
   std::vector<ColorOutput> outputs;
   void append(ANSIColor color, int len = 1);
@@ -624,11 +626,11 @@ public:
   Panel(Panel &&ref);
 
   void set(int x, int y);
-  /*
   void get(int &x, int &y) {
     x = this->x;
     y = this->y;
-  }; */
+  };
+
   void setTitle(std::unique_ptr<Line> T, int off = 1);
   void setStyle(BorderStyle bs);
   void setColor(ANSIColor c);
