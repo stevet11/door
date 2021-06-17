@@ -319,6 +319,7 @@ Door::Door(std::string dname, int argc, char *argv[])
   }
 
   if (opt.getFlag("local")) {
+    node = 0;	  
     if (username.empty()) {
       uid_t uid = geteuid();
       struct passwd *pw;
@@ -647,7 +648,7 @@ void Door::parse_dropfile(const char *filepath) {
 ofstream &Door::log(void) {
   std::time_t t = std::time(nullptr);
   std::tm tm = *std::localtime(&t);
-  logf << std::put_time(&tm, "%c ");
+  logf << std::put_time(&tm, "%c ") << node << " " << username << " ";
   return logf;
 }
 
