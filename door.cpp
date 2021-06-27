@@ -319,7 +319,7 @@ Door::Door(std::string dname, int argc, char *argv[])
   }
 
   if (opt.getFlag("local")) {
-    node = 0;	  
+    node = 0;
     if (username.empty()) {
       uid_t uid = geteuid();
       struct passwd *pw;
@@ -579,6 +579,12 @@ void Door::parse_dropfile(const char *filepath) {
 
   // Ok, parse file here...
   std::ifstream file(filepath);
+
+  if (file.fail()) {
+    log() << "Failed to open " << filepath << std::endl;
+    return;
+  }
+
   std::string line;
   while (std::getline(file, line)) {
     // These are "DOS" files.  Remove trailing \r.
