@@ -81,12 +81,13 @@ void Bar::update_bar(void) {
 
         const char *cp_len_start = cp;
         const char *cp_len = cp;
-        for (int i = 0; i < percent.length(); i++) {
+        for (int i = 0; i < (int)percent.length(); i++) {
           utf8::next(cp_len, end);
         }
 
         int unicode_len = cp_len - cp_len_start;
-        // cout << " " << std::setw(3) << unicode_pos << " " << std::setw(3) << unicode_len << " ";
+        // cout << " " << std::setw(3) << unicode_pos << " " << std::setw(3) <<
+        // unicode_len << " ";
         text.replace(unicode_pos, unicode_len, percent);
       } else {
         text.replace(pos, percent.length(), percent);
@@ -202,6 +203,22 @@ void Bar::set(int value, int max) {
 void Bar::set(unsigned long percent) {
   current_percent = percent;
   update_bar();
+}
+
+/**
+ * Output Bar
+ *
+ * This outputs the Progress Bar's internal line.
+  *
+ * @param os std::ostream
+ * @param b const Bar &
+ * @return std::ostream&
+ */
+std::ostream &operator<<(std::ostream &os, const Bar &b) {
+  os << b.line;
+  // reset?
+  os << door::reset;
+  return os;
 }
 
 } // namespace door

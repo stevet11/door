@@ -578,12 +578,21 @@ public:
 extern renderFunction rBlueYellow;
 
 /*
-Maybe I don't want to use a line for this?  It doesn't have location!
-(but if it is a line, you can put it into a panel,which does have
-location...)
+  Progress Bar Styles:
+
+  solid chars.
+  half step chars.
+  gradient (1/4 %25, %50, %75) chars.
+  percentage (solid chars, percentage is XX% or 100)
+  percent_space (solid chars, percentage is " XX% " or " 100 ")
 */
 enum class BarStyle { SOLID, HALF_STEP, GRADIENT, PERCENTAGE, PERCENT_SPACE };
 
+/*
+Progress Bar
+
+This sets up the internal "Line" to display the progress bar.
+ */
 class Bar {
 private:
   unsigned long current_percent;
@@ -599,6 +608,7 @@ public:
   void set(int value, int max);
   void set(float percent);
   void set(unsigned long percent);
+  friend std::ostream &operator<<(std::ostream &os, const Bar &b);
 };
 
 /**
