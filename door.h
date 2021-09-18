@@ -588,29 +588,6 @@ extern renderFunction rBlueYellow;
 */
 enum class BarStyle { SOLID, HALF_STEP, GRADIENT, PERCENTAGE, PERCENT_SPACE };
 
-/*
-Progress Bar
-
-This sets up the internal "Line" to display the progress bar.
- */
-class Bar {
-protected:
-  unsigned long current_percent;
-  BarStyle style;
-  std::string text;
-  void update_bar(void);
-  int length;
-
-public:
-  Line line;
-  Bar(int width, BarStyle s = BarStyle::SOLID);
-  // helper ...
-  void set(int value, int max);
-  void set(float percent);
-  void set(unsigned long percent);
-  friend std::ostream &operator<<(std::ostream &os, const Bar &b);
-};
-
 /**
  * BarColorRange
  * 
