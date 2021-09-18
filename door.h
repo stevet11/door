@@ -454,7 +454,7 @@ public:
 };
 
 class BasicLine {
-private:
+protected:
   std::string text;
   bool hasColor;
   ANSIColor color;
@@ -480,7 +480,7 @@ public:
 };
 
 class MultiLine {
-private:
+protected:
   std::vector<std::shared_ptr<BasicLine>> lines;
 
 public:
@@ -500,7 +500,7 @@ public:
  * @brief Text and ANSIColor
  */
 class Line {
-private:
+protected:
   /// Text of the line
   std::string text;
 
@@ -594,7 +594,7 @@ Progress Bar
 This sets up the internal "Line" to display the progress bar.
  */
 class Bar {
-private:
+protected:
   unsigned long current_percent;
   BarStyle style;
   std::string text;
@@ -610,6 +610,47 @@ public:
   void set(unsigned long percent);
   friend std::ostream &operator<<(std::ostream &os, const Bar &b);
 };
+
+/**
+ * BarColorRange
+ * 
+ * vector<door::BarColorRange> colorRange = {
+ *     {2500, door::ANSIColor(door::COLOR::RED)},
+ *     {5000, door::ANSIColor(door::COLOR::BROWN)},
+ *     {7500, door::ANSIColor(door::COLOR::YELLOW, door::ATTR::BOLD)},
+ *     {9500, door::ANSIColor(door::COLOR::GREEN)},
+ *     {10100, door::ANSIColor(door::COLOR::GREEN, door::ATTR::BOLD)}};
+ * BarLine.setColorRange(colorRange);
+ * 
+ */
+struct BarColorRange {
+  unsigned long percent;
+  ANSIColor c;
+};
+
+class BarLine : public Line {
+protected:
+  BarStyle barstyle;
+  unsigned long current_percent;
+  void init(void);
+  std::string update_bar(void);
+  int length;
+  vector<BarColorRange> colorRange;
+
+public:
+  BarLine(const std::string &txt, int width);
+  BarLine(const char *txt, int width);
+  BarLine(const std::string &txt, int width, ANSIColor c);
+  BarLine(const char *txt, int width, ANSIColor c);
+
+  void setStyle(BarStyle s);
+  void set(int value, int max);
+  void set(float percent);
+  void set(unsigned long percent);
+  void setColorRange(vector<BarColorRange> bcr);
+  // friend std::ostream &operator<<(std::ostream &os, const BarLine &b);
+};
+
 
 /**
  * The different Borders supported by Panel.
@@ -718,7 +759,7 @@ Remaining LC text = c4
  */
 
 class Menu : public Panel {
-private:
+protected:
   unsigned int chosen;
   std::vector<char> options;
   renderFunction selectedRender;
@@ -755,7 +796,7 @@ public:
 };
 
 class Screen {
-private:
+protected:
   // bool hidden;
   /**
    * @brief vector of panels.
