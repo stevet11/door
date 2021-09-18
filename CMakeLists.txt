@@ -7,7 +7,7 @@ project(door++
 # zf_log target (required)
 set(HEADERS_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set(HEADERS door.h)
-set(SOURCES door.cpp ansicolor.cpp lines.cpp panel.cpp anyoption.cpp)
+set(SOURCES door.cpp ansicolor.cpp lines.cpp panel.cpp anyoption.cpp bar.cpp)
 
 # add_subdirectory(opendoors)
 

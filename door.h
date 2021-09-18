@@ -577,6 +577,30 @@ public:
 /// Example BlueYellow renderFunction
 extern renderFunction rBlueYellow;
 
+/*
+Maybe I don't want to use a line for this?  It doesn't have location!
+(but if it is a line, you can put it into a panel,which does have
+location...)
+*/
+enum class BarStyle { SOLID, HALF_STEP, GRADIENT, PERCENTAGE, PERCENT_SPACE };
+
+class Bar {
+private:
+  unsigned long current_percent;
+  BarStyle style;
+  std::string text;
+  void update_bar(void);
+  int length;
+
+public:
+  Line line;
+  Bar(int width, BarStyle s = BarStyle::SOLID);
+  // helper ...
+  void set(int value, int max);
+  void set(float percent);
+  void set(unsigned long percent);
+};
+
 /**
  * The different Borders supported by Panel.
  *
