@@ -615,11 +615,13 @@ protected:
   vector<BarColorRange> colorRange;
 
 public:
-  BarLine(const std::string &txt, int width);
-  BarLine(const char *txt, int width);
-  BarLine(const std::string &txt, int width, ANSIColor c);
-  BarLine(const char *txt, int width, ANSIColor c);
-
+  BarLine(int width);
+  BarLine(int width, BarStyle style);
+  BarLine(int width, BarStyle style, ANSIColor c);
+  
+  void watch(float &percent);
+  void watch(int &value, int &max);
+  
   void setStyle(BarStyle s);
   void set(int value, int max);
   void set(float percent);

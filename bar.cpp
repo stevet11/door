@@ -6,27 +6,19 @@
 
 namespace door {
 
-BarLine::BarLine(const std::string &txt, int width)
-    : Line(txt, width), barstyle{BarStyle::SOLID},
+BarLine::BarLine(int width)
+    : Line("", width), barstyle{BarStyle::SOLID},
       current_percent{0}, length{width} {
   init();
 }
 
-BarLine::BarLine(const char *txt, int width)
-    : Line(txt, width), barstyle{BarStyle::SOLID},
-      current_percent{0}, length{width} {
+BarLine::BarLine(int width, BarStyle style)
+    : Line("", width), barstyle{style}, current_percent{0}, length{width} {
   init();
 }
 
-BarLine::BarLine(const std::string &txt, int width, ANSIColor c)
-    : Line(txt, width, c), barstyle{BarStyle::SOLID},
-      current_percent{0}, length{width} {
-  init();
-}
-
-BarLine::BarLine(const char *txt, int width, ANSIColor c)
-    : Line(txt, width, c), barstyle{BarStyle::SOLID},
-      current_percent{0}, length{width} {
+BarLine::BarLine(int width, BarStyle style, ANSIColor c)
+    : Line("", width, c), barstyle{style}, current_percent{0}, length{width} {
   init();
 }
 
@@ -50,6 +42,52 @@ void BarLine::init(void) {
     return this->update_bar();
   };
   setUpdater(barLineUpdate);
+  update();
+}
+
+void BarLine::watch(float &percent) {
+  door::updateFunction lineWatchUpdate = [this, &percent]() -> std::string {
+    this->set(percent);
+    if (!colorRange.empty()) {
+      // Ok, there is a range, so test for it.
+      ANSIColor ac;
+      // unsigned long p;
+      for (auto bc : colorRange) {
+        if (current_percent <= bc.percent) {
+          ac = bc.c;
+          // p = bc.percent;
+          break;
+        };
+      }
+      // cout << "!" << current_percent << "," << p << " ";
+      setColor(ac);
+    }
+    return this->update_bar();
+  };
+  setUpdater(lineWatchUpdate);
+  update();
+}
+
+void BarLine::watch(int &value, int &max) {
+  door::updateFunction lineWatchUpdate = [this, &value, &max]() -> std::string {
+    this->set(value, max);
+    if (!colorRange.empty()) {
+      // Ok, there is a range, so test for it.
+      ANSIColor ac;
+      // unsigned long p;
+      for (auto bc : colorRange) {
+        if (current_percent <= bc.percent) {
+          ac = bc.c;
+          // p = bc.percent;
+          break;
+        };
+      }
+      // cout << "!" << current_percent << "," << p << " ";
+      setColor(ac);
+    }
+    return this->update_bar();
+  };
+  setUpdater(lineWatchUpdate);
   update();
 }
 
