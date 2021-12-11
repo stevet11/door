@@ -1,5 +1,6 @@
-#include "door.h"
 #include <string>
+
+#include "door.h"
 
 /**
  * @file
@@ -13,9 +14,7 @@ namespace door {
  * with sensible defaults (White on Black).
  *
  */
-ANSIColor::ANSIColor()
-    : fg(COLOR::WHITE), bg(COLOR::BLACK), reset(0), bold(0), blink(0),
-      inverse(0) {}
+ANSIColor::ANSIColor() : fg(COLOR::WHITE), bg(COLOR::BLACK), attr(0) {}
 
 /**
  * Construct a new ANSIColor::ANSIColor object
@@ -111,18 +110,18 @@ ANSIColor::ANSIColor(COLOR f, COLOR b, ATTR a1, ATTR a2) : ANSIColor() {
  */
 ANSIColor &ANSIColor::Attr(ATTR a) {
   switch (a) {
-  case ATTR::RESET:
-    reset = 1;
-    break;
-  case ATTR::BOLD:
-    bold = 1;
-    break;
-  case ATTR::BLINK:
-    blink = 1;
-    break;
-  case ATTR::INVERSE:
-    inverse = 1;
-    break;
+    case ATTR::RESET:
+      attr |= ATTR_RESET;
+      break;
+    case ATTR::BOLD:
+      attr |= ATTR_BOLD;
+      break;
+    case ATTR::BLINK:
+      attr |= ATTR_BLINK;
+      break;
+    case ATTR::INVERSE:
+      attr |= ATTR_INVERSE;
+      break;
   }
   return *this;
 }
@@ -136,8 +135,9 @@ ANSIColor &ANSIColor::Attr(ATTR a) {
  * @return bool
  */
 bool ANSIColor::operator==(const ANSIColor &c) const {
-  return ((fg == c.fg) and (bg == c.bg) and (bold == c.bold) and
-          (blink == c.blink) and (inverse == c.inverse));
+  return ((fg == c.fg) and (bg == c.bg) and
+          ((attr & (ATTR_BOLD | ATTR_BLINK | ATTR_INVERSE)) ==
+           ((c.attr & (ATTR_BOLD | ATTR_BLINK | ATTR_INVERSE)))));
 }
 
 /**
@@ -149,8 +149,9 @@ bool ANSIColor::operator==(const ANSIColor &c) const {
  * @return bool
  */
 bool ANSIColor::operator!=(const ANSIColor &c) const {
-  return !((fg == c.fg) and (bg == c.bg) and (bold == c.bold) and
-           (blink == c.blink) and (inverse == c.inverse));
+  return !((fg == c.fg) and (bg == c.bg) and
+           ((attr & (ATTR_BOLD | ATTR_BLINK | ATTR_INVERSE)) ==
+            ((c.attr & (ATTR_BOLD | ATTR_BLINK | ATTR_INVERSE)))));
 }
 
 /**
@@ -160,10 +161,7 @@ bool ANSIColor::operator!=(const ANSIColor &c) const {
  */
 void ANSIColor::setFg(COLOR f) {
   fg = f;
-  reset = 0;
-  bold = 0;
-  blink = 0;
-  inverse = 0;
+  attr = 0;
 }
 
 /**
@@ -174,7 +172,7 @@ void ANSIColor::setFg(COLOR f) {
  */
 void ANSIColor::setFg(COLOR f, ATTR a) {
   fg = f;
-  attr(a);
+  setAttr(a);
 }
 
 /**
@@ -191,12 +189,9 @@ void ANSIColor::setBg(COLOR b) { bg = b; }
  *
  * @param[in] a ATTR
  */
-void ANSIColor::attr(ATTR a) {
+void ANSIColor::setAttr(ATTR a) {
   // first, clear all attributes
-  reset = 0;
-  bold = 0;
-  blink = 0;
-  inverse = 0;
+  attr = 0;
   Attr(a);
 }
 
@@ -208,29 +203,30 @@ std::string ANSIColor::output(void) const {
   std::string clr(CSI);
 
   // check for special cases
-  if (reset and (fg == COLOR::BLACK) and (bg == COLOR::BLACK)) {
+  if (((attr & ATTR_RESET) == ATTR_RESET) and (fg == COLOR::BLACK) and
+      (bg == COLOR::BLACK)) {
     clr += "0m";
     return clr;
   }
 
-  if (reset and (fg == COLOR::WHITE) and (bg == COLOR::BLACK)) {
+  if (((attr & ATTR_RESET) == ATTR_RESET) and (fg == COLOR::WHITE) and
+      (bg == COLOR::BLACK)) {
     clr += "0m";
     return clr;
   }
 
-  if (reset) {
+  if ((attr & ATTR_RESET) == ATTR_RESET) {
     clr += "0;";
   }
 
-  if (bold) {
-    if (blink) {
+  if ((attr & ATTR_BOLD) == ATTR_BOLD) {
+    if ((attr & ATTR_BLINK) == ATTR_BLINK) {
       clr += "5;";
     }
     clr += "1;";
   } else {
-    if (!reset)
-      clr += "0;";
-    if (blink) {
+    if (!((attr & ATTR_RESET) == ATTR_RESET)) clr += "0;";
+    if ((attr & ATTR_BLINK) == ATTR_BLINK) {
       clr += "5;";
     }
   }
@@ -253,9 +249,9 @@ std::string ANSIColor::debug(void) {
   output += ", BG";
   output += std::to_string((int)bg);
   output += ", B";
-  output += std::to_string(bold);
+  output += std::to_string((attr & ATTR_BOLD) == ATTR_BOLD);
   output += ", R";
-  output += std::to_string(reset);
+  output += std::to_string((attr & ATTR_RESET) == ATTR_RESET);
 
   return output;
 }
@@ -272,27 +268,29 @@ std::string ANSIColor::output(ANSIColor &previous) const {
   // color output optimization
 
   // check for special cases
-  if (reset and (fg == COLOR::BLACK) and (bg == COLOR::BLACK)) {
+  if (((attr & ATTR_RESET) == ATTR_RESET) and (fg == COLOR::BLACK) and
+      (bg == COLOR::BLACK)) {
     clr += "0m";
     previous = *this;
-    previous.reset = 0;
+    previous.attr &= ~ATTR_RESET;  // reset = 0;
     return clr;
   }
 
   bool temp_reset = false;
-  if ((!blink) and (blink != previous.blink)) {
+  if ((!((attr & ATTR_BLINK) == ATTR_BLINK)) and
+      (((attr & ATTR_BLINK) == ATTR_BLINK) !=
+       ((previous.attr & ATTR_BLINK) == ATTR_BLINK))) {
     temp_reset = true;
   }
 
-  if ((reset) or (temp_reset)) {
+  if (((attr & ATTR_RESET) == ATTR_RESET) or (temp_reset)) {
     // current has RESET, so default to always sending colors.
     if (temp_reset) {
       clr += "0m";
     }
 
     // this fixes the extra \x1b that shows up with reset.
-    if (clr.compare(CSI) == 0)
-      clr.clear();
+    if (clr.compare(CSI) == 0) clr.clear();
     clr += output();
 
     /*
@@ -303,7 +301,7 @@ std::string ANSIColor::output(ANSIColor &previous) const {
     */
 
     previous = *this;
-    previous.reset = 0;
+    previous.attr &= ~ATTR_RESET;
     return clr;
   }
 
@@ -314,38 +312,33 @@ std::string ANSIColor::output(ANSIColor &previous) const {
 
   // resume "optimization"
 
-  if (bold != previous.bold) {
+  if (((attr & ATTR_BOLD) == ATTR_BOLD) !=
+      ((previous.attr & ATTR_BOLD) == ATTR_BOLD)) {
     // not the same, so handle this.
-    if (bold) {
-      if (blink) {
+    if ((attr & ATTR_BOLD) == ATTR_BOLD) {
+      if ((attr & ATTR_BLINK) == ATTR_BLINK) {
         clr += "5;";
       }
       clr += "1;";
-      if (fg != previous.fg)
-        clr += std::to_string((int)fg + 30) + ";";
-      if (bg != previous.bg)
-        clr += std::to_string((int)bg + 40) + ";";
+      if (fg != previous.fg) clr += std::to_string((int)fg + 30) + ";";
+      if (bg != previous.bg) clr += std::to_string((int)bg + 40) + ";";
     } else {
       clr += "0;";
-      if (blink) {
+      if ((attr & ATTR_BLINK) == ATTR_BLINK) {
         clr += "5;";
       }
 
       // RESET to turn OFF BOLD, clears previous
-      if (fg != COLOR::WHITE)
-        clr += std::to_string((int)fg + 30) + ";";
-      if (bg != COLOR::BLACK)
-        clr += std::to_string((int)bg + 40) + ";";
+      if (fg != COLOR::WHITE) clr += std::to_string((int)fg + 30) + ";";
+      if (bg != COLOR::BLACK) clr += std::to_string((int)bg + 40) + ";";
     }
   } else {
     // not bold.
-    if (blink) {
+    if ((attr & ATTR_BLINK) == ATTR_BLINK) {
       clr += "5;";
     }
-    if (fg != previous.fg)
-      clr += std::to_string((int)fg + 30) + ";";
-    if (bg != previous.bg)
-      clr += std::to_string((int)bg + 40) + ";";
+    if (fg != previous.fg) clr += std::to_string((int)fg + 30) + ";";
+    if (bg != previous.bg) clr += std::to_string((int)bg + 40) + ";";
   };
 
   // Remove ';' if last character
@@ -376,8 +369,7 @@ std::ostream &operator<<(std::ostream &os, const ANSIColor &c) {
     d->track = false;
     out = c.output(d->previous);
     // if (!out.empty())
-    if (out.compare("\x1b[") == 0)
-      std::abort();
+    if (out.compare("\x1b[") == 0) std::abort();
 
     *d << out;
     d->track = true;
@@ -392,4 +384,4 @@ std::ostream &operator<<(std::ostream &os, const ANSIColor &c) {
 
 ANSIColor reset(ATTR::RESET);
 
-} // namespace door
+}  // namespace door

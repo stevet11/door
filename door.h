@@ -1,7 +1,6 @@
 #ifndef DOOR_H
 #define DOOR_H
 
-#include "anyoption.h"
 #include <cstdint>
 #include <ctime>
 #include <fstream>
@@ -12,6 +11,8 @@
 #include <memory>
 #include <ostream>
 #include <vector>
+
+#include "anyoption.h"
 
 // raw mode
 #include <termios.h>
@@ -124,6 +125,26 @@ enum class ATTR : std::int8_t {
   INVERSE = 7
 };
 
+constexpr long strhash(const char *txt) {
+  long result = 0;
+
+  for (int x = 0; x < 3; ++x) {
+    if (txt[x] == 0) break;
+    result = (result << 8) | txt[x];
+  }
+
+  return result;
+};
+
+enum Attribute {
+  ATTR_NONE = 0x00,
+  ATTR_BOLD = 0x01,
+  ATTR_BRIGHT = 0x01,
+  ATTR_INVERSE = 0x02,
+  ATTR_BLINK = 0x04,
+  ATTR_RESET = 0x08,
+};
+
 /**
  * @class ANSIColor
  * This holds foreground, background and ANSI-BBS attribute
@@ -135,22 +156,119 @@ enum class ATTR : std::int8_t {
  *
  */
 class ANSIColor {
+ public:
   /** Foreground color */
   COLOR fg;
   /** Background color */
   COLOR bg;
   // Track attributes (ATTR)
-  /** reset flag / always send color and attributes */
-  unsigned int reset : 1;
-  /** bold / bright flag */
-  unsigned int bold : 1;
-  /** blink slow blinking text */
-  unsigned int blink : 1;
-  /** inverse */
-  unsigned int inverse : 1;
+  unsigned char attr;
 
-public:
+  /** reset flag / always send color and attributes */
+  // unsigned int reset : 1;
+  /** bold / bright flag */
+  // unsigned int bold : 1;
+  /** blink slow blinking text */
+  // unsigned int blink : 1;
+  /** inverse */
+  // unsigned int inverse : 1;
+
+ public:
   ANSIColor();
+  constexpr ANSIColor(const char *text)
+      : fg{COLOR::WHITE}, bg{COLOR::BLACK}, attr{0} {
+    const char *cp = text;
+    bool use_on = false;
+
+    while (*cp != 0) {
+      long key = strhash(cp);
+
+      switch (key) {
+        case strhash("BRI"):
+          attr |= ATTR_BOLD;
+          break;
+        case strhash("BOL"):
+          attr |= ATTR_BOLD;
+          break;
+        case strhash("BLI"):
+          attr |= ATTR_BLINK;
+          break;
+        case strhash("INV"):
+          attr |= ATTR_INVERSE;
+          break;
+        case strhash("RES"):
+          attr |= ATTR_RESET;
+          break;
+        case strhash("ON "):
+          use_on = true;
+          break;
+
+        case strhash("BLU"):
+          if (use_on)
+            bg = COLOR::BLUE;
+          else
+            fg = COLOR::BLUE;
+          break;
+        case strhash("RED"):
+          if (use_on)
+            bg = COLOR::RED;
+          else
+            fg = COLOR::RED;
+          break;
+        case strhash("GRE"):
+          if (use_on)
+            bg = COLOR::GREEN;
+          else
+            fg = COLOR::GREEN;
+          break;
+        case strhash("YEL"):
+          if (use_on)
+            bg = COLOR::YELLOW;
+          else {
+            fg = COLOR::YELLOW;
+            attr |= ATTR_BOLD;
+          }
+          // if (use_on) throw error!
+          break;
+        case strhash("BRO"):
+          if (use_on)
+            bg = COLOR::BROWN;
+          else
+            fg = COLOR::BROWN;
+          break;
+        case strhash("CYA"):
+          if (use_on)
+            bg = COLOR::CYAN;
+          else
+            fg = COLOR::CYAN;
+          break;
+        case strhash("MAG"):
+          if (use_on)
+            bg = COLOR::MAGENTA;
+          else
+            fg = COLOR::MAGENTA;
+          break;
+        case strhash("BLA"):
+          if (use_on)
+            bg = COLOR::BLACK;
+          else
+            fg = COLOR::BLACK;
+          break;
+        case strhash("WHI"):
+          if (use_on)
+            bg = COLOR::WHITE;
+          else
+            fg = COLOR::WHITE;
+          break;
+      }
+
+      // skip to the space character
+      while ((*cp != ' ') && (*cp != 0)) ++cp;
+      // skip past the space character
+      while (*cp == ' ') ++cp;
+    }
+  };
+
   ANSIColor(ATTR a);
   ANSIColor(COLOR f);
   ANSIColor(COLOR f, ATTR a);
@@ -174,7 +292,7 @@ public:
    * @return COLOR
    */
   COLOR getBg() { return bg; };
-  void attr(ATTR a);
+  void setAttr(ATTR a);
 
   std::string output(void) const;
   std::string debug(void);
@@ -188,8 +306,7 @@ public:
  * This handles output to the caller, via ostream.
  */
 class Door : public std::ostream, private std::streambuf {
-
-private:
+ private:
   std::streamsize xsputn(const char *s, std::streamsize n) override;
   int overflow(int c) override;
   /** The name used for logfile */
@@ -220,7 +337,7 @@ private:
   /** Thread used to update time_left and time_used. */
   std::thread time_thread;
 
-public:
+ public:
   Door(std::string dname, int argc, char *argv[]);
   Door(Door &) = delete;
   virtual ~Door();
@@ -289,7 +406,7 @@ public:
  *
  */
 class ColorOutput {
-public:
+ public:
   ColorOutput();
   void reset(void);
 
@@ -320,7 +437,7 @@ class Render {
   /// Complete text to be rendered.
   std::string text;
 
-public:
+ public:
   Render(const std::string txt);
 
   /// Vector of ColorOutput object.
@@ -379,7 +496,7 @@ typedef std::function<std::string(void)> updateFunction;
  * @brief Clear the screen
  */
 class Clrscr {
-public:
+ public:
   Clrscr(void);
   friend std::ostream &operator<<(std::ostream &os, const Clrscr &clr);
 };
@@ -396,7 +513,7 @@ extern Clrscr cls;
  * @brief CR+LF
  */
 class NewLine {
-public:
+ public:
   NewLine(void);
   friend std::ostream &operator<<(std::ostream &os, const NewLine &nl);
 };
@@ -428,7 +545,7 @@ class Goto {
   /// Y-Position
   int y;
 
-public:
+ public:
   Goto(int xpos, int ypos);
   /**
    * Default Goto constructor copier
@@ -447,14 +564,14 @@ extern const char RestoreCursor[];
  * multilines? */
 
 class LineBase {
-public:
+ public:
   virtual ~LineBase() = default;
   virtual bool update(void) = 0;
   // friend std::ostream &operator<<(std::ostream &os, const LineBase &lb) = 0;
 };
 
 class BasicLine {
-protected:
+ protected:
   std::string text;
   bool hasColor;
   ANSIColor color;
@@ -463,7 +580,7 @@ protected:
   /// updateFunction to use when updating.
   updateFunction updater;
 
-public:
+ public:
   BasicLine(std::string txt);
   BasicLine(std::string txt, ANSIColor c);
   BasicLine(const BasicLine &rhs) = default;
@@ -480,10 +597,10 @@ public:
 };
 
 class MultiLine {
-protected:
+ protected:
   std::vector<std::shared_ptr<BasicLine>> lines;
 
-public:
+ public:
   MultiLine();
   void append(std::shared_ptr<BasicLine> bl);
 
@@ -500,7 +617,7 @@ public:
  * @brief Text and ANSIColor
  */
 class Line {
-protected:
+ protected:
   /// Text of the line
   std::string text;
 
@@ -525,7 +642,7 @@ protected:
    */
   // void makeWidth(int width);
 
-public:
+ public:
   Line(const std::string &txt, int width = 0);
   Line(const char *txt, int width = 0);
   Line(const std::string &txt, int width, ANSIColor c);
@@ -537,7 +654,7 @@ public:
   // ~Line();
 
   bool hasRender(void);
-  int length(void); //  const;
+  int length(void);  //  const;
   void fit(void);
   /**
    * @param padstring std::string &
@@ -590,7 +707,7 @@ enum class BarStyle { SOLID, HALF_STEP, GRADIENT, PERCENTAGE, PERCENT_SPACE };
 
 /**
  * BarColorRange
- * 
+ *
  * vector<door::BarColorRange> colorRange = {
  *     {2500, door::ANSIColor(door::COLOR::RED)},
  *     {5000, door::ANSIColor(door::COLOR::BROWN)},
@@ -598,7 +715,7 @@ enum class BarStyle { SOLID, HALF_STEP, GRADIENT, PERCENTAGE, PERCENT_SPACE };
  *     {9500, door::ANSIColor(door::COLOR::GREEN)},
  *     {10100, door::ANSIColor(door::COLOR::GREEN, door::ATTR::BOLD)}};
  * BarLine.setColorRange(colorRange);
- * 
+ *
  */
 struct BarColorRange {
   unsigned long percent;
@@ -606,7 +723,7 @@ struct BarColorRange {
 };
 
 class BarLine : public Line {
-protected:
+ protected:
   BarStyle barstyle;
   unsigned long current_percent;
   void init(void);
@@ -614,14 +731,14 @@ protected:
   int length;
   vector<BarColorRange> colorRange;
 
-public:
+ public:
   BarLine(int width);
   BarLine(int width, BarStyle style);
   BarLine(int width, BarStyle style, ANSIColor c);
-  
+
   void watch(float &percent);
   void watch(int &value, int &max);
-  
+
   void setStyle(BarStyle s);
   void set(int value, int max);
   void set(float percent);
@@ -629,7 +746,6 @@ public:
   void setColorRange(vector<BarColorRange> bcr);
   // friend std::ostream &operator<<(std::ostream &os, const BarLine &b);
 };
-
 
 /**
  * The different Borders supported by Panel.
@@ -651,10 +767,10 @@ enum class BorderStyle {
 };
 
 class Panel {
-protected:
+ protected:
   int x;
   int y;
-  int width; // or padding ?
+  int width;  // or padding ?
   BorderStyle border_style;
   ANSIColor border_color;
   /**
@@ -667,16 +783,16 @@ protected:
   bool hidden;
   // when you show panel, should it mark it as
   // redisplay everything??  maybe??
-  bool shown_once; // ?? maybe  shown_once_already ?
+  bool shown_once;  // ?? maybe  shown_once_already ?
   std::unique_ptr<Line> title;
   int offset;
 
-public:
+ public:
   Panel(int x, int y, int width);
   Panel(int width);
 
   // Panel(const Panel &);
-  Panel(Panel &) = delete; // default;
+  Panel(Panel &) = delete;  // default;
   Panel(Panel &&ref);
 
   void set(int x, int y);
@@ -738,7 +854,7 @@ Remaining LC text = c4
  */
 
 class Menu : public Panel {
-protected:
+ protected:
   unsigned int chosen;
   std::vector<char> options;
   renderFunction selectedRender;
@@ -748,7 +864,7 @@ protected:
   std::function<void(Door &d, std::string &)> unselectedColorizer;
   */
 
-public:
+ public:
   static renderFunction defaultSelectedRender;
   static renderFunction defaultUnselectedRender;
   /*
@@ -775,14 +891,14 @@ public:
 };
 
 class Screen {
-protected:
+ protected:
   // bool hidden;
   /**
    * @brief vector of panels.
    */
   std::vector<std::unique_ptr<Panel>> panels;
 
-public:
+ public:
   Screen(void);
   Screen(Screen &) = default;
   void addPanel(std::unique_ptr<Panel> p);
@@ -846,5 +962,5 @@ lightline - text, changes format/coloring if focus/nofocus is set?
 
  */
 
-} // namespace door
+}  // namespace door
 #endif
